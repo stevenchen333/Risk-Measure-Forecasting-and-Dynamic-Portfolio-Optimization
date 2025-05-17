@@ -1,0 +1,199 @@
+---
+title: "Final Project"
+author: "Tan Chin hong"
+date: "`r Sys.Date()`"
+output: html_document
+---
+# Abstract
+
+In this work, we wil use GARCh model (and its families) to forecast volatilities and use it on a financial risk measaures which then be used for portfolio optimization problem.
+
+
+# Dataset
+The stock prioces given below is the adjusted prices
+```{r}
+require(zoo)
+require(forecast)
+
+stock_df = read.csv("stocks_adj_prices")[1:753,]
+
+head(stock_df)
+tail(stock_df)
+#View(stock_df)
+#unique(is.na.data.frame(stock_df)) #no NA
+
+rownames(stock_df)<-stock_df[,1];stock_df<-stock_df[,-1]
+stock_df = zoo(stock_df, order.by = rownames(stock_df))
+
+
+
+
+
+```
+
+
+
+# EDA
+## Basic EDA
+```{r}
+# Plots
+
+
+par(mfrow = c(5, 2), mar = c(3, 3, 2, 1))  # adjust margins as needed
+
+for (i in 1:10) {
+  ts.plot(stock_df[, i], main = colnames(stock_df)[i], ylab = "Normalized", xlab = "Time", col = "blue")
+}
+
+par(mfrow = c(1, 1))
+
+
+```
+
+
+```{r}
+normalize <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+stock_norm <- apply(stock_df, 2, normalize)
+
+matplot(stock_norm, type = "l", lty = 1, col = rainbow(ncol(stock_df)),
+        xlab = "Time", ylab = "Normalized Price",
+        main = "Normalized Stock Prices Over Time")
+
+legend("bottomright", legend = colnames(stock_df), col = rainbow(ncol(stock_df)), lty = 1, cex=0.7)
+
+```
+
+
+
+
+## Log returns
+
+```{r}
+
+calculate_returns <- function(stock_df, type = c("log", "simple")) {
+  type <- match.arg(type)
+
+  # Extract dates and prices
+  dates <- index(stock_df)
+  prices <- stock_df
+
+  # Compute returns
+  if (type == "log") {
+    returns <- diff(log(as.matrix(prices)))
+  } else {
+    returns <- diff(as.matrix(prices)) / head(as.matrix(prices), -1)
+  }
+
+  # Adjust dates to match the return periods
+  return_dates <- dates[-1]
+
+  # Combine into a new data frame
+  return_df <- data.frame(returns)
+  colnames(return_df) <- colnames(prices)
+
+  return(return_df)
+}
+
+
+returns_df = calculate_returns(stock_df, "log")
+
+```
+
+```{r}
+head(returns_df)
+```
+
+```{r}
+# Set up plotting area for 10 plots, e.g., 5 rows x 2 cols
+par(mfrow = c(5, 2), mar = c(3, 3, 2, 1))  # adjust margins as needed
+
+# Plot each normalized series separately
+for (i in 1:10) {
+  ts.plot(returns_df[, i], main = colnames(stock_df)[i], ylab = "Normalized", xlab = "Time", col = "blue")
+  abline(h = mean(returns_df[, i]), col = "red", lty = 2)
+}
+
+# Reset plotting layout back to default
+par(mfrow = c(1, 1))
+```
+
+```{r}
+
+# Plot all normalized series in one plot
+matplot(returns_df, type = "l", lty = 1, col = rainbow(ncol(stock_df)),
+        xlab = "Time", ylab = "Normalized Price",
+        main = "Normalized Stock Prices Over Time")
+
+# Add legend
+legend("bottomright", legend = colnames(stock_df), col = rainbow(ncol(stock_df)), lty = 1, cex=0.7)
+
+
+```
+
+
+
+
+```{r, fig.height=8, fig.width = 10}
+acf(returns_df, lag = 46)
+
+```
+
+# Modelling
+
+
+
+```{r}
+#install.packages("rugarch")  # Only run once
+library(rugarch)
+
+# train test split
+train = stock_df[1:0.8*nrow(stock_df)]
+
+```
+
+
+```{r}
+spec <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+  mean.model = list(armaOrder = c(0, 0), include.mean = TRUE),
+  distribution.model = "norm"
+)
+
+```
+
+
+
+```{r}
+garch_fits<-list()
+
+for (i in colnames(returns_df)){
+  # Fit the model (suppress warnings for cleaner output)
+  index = which(colnames(returns_df) == i)
+  fit <- tryCatch({
+    ugarchfit(spec, data = returns_df[,index])
+  }, error = function(e) {
+    cat("Error fitting", i, ":", e$message, "\n")
+    return(NULL)
+  })
+  
+  # Store result
+  garch_fits[[i]] <- fit
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
