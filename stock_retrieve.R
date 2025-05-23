@@ -78,5 +78,5 @@ get_stock_prices <- function(tickers, start_date, end_date, output_file = NULL) 
 
 stock_list = c("AAPL", "MSFT", "META", "V", "JPM",
                "C", "BTC-USD","UEC", "GM", "ET")
-
-get_stock_prices(stock_list, start_date= "2022-01-01", end_date = "2025-01-01", output_file = "stocks_adj_prices" )
+get_stock_prices(stock_list, start_date= "2020-01-01", end_date = "2021-12-31", output_file = "stocks_adj_prices1.csv" )
+get_stock_prices(stock_list, start_date= "2022-01-01", end_date = "2025-01-01", output_file = "stocks_adj_prices2.csv" )
