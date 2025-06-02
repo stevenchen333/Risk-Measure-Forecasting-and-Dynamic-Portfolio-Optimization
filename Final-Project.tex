@@ -1,0 +1,1813 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Final Project},
+  pdfauthor={Tan Chin hong},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Final Project}
+\author{Tan Chin hong}
+\date{2025-05-28}
+
+\begin{document}
+\maketitle
+
+\section{Abstract}\label{abstract}
+
+In this work, we will use GARCH model (and its families) to forecast
+volatilities and use it on a financial risk measures which then be used
+for portfolio optimization problem.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{source}\NormalTok{(}\StringTok{"Utils.R"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: aTSA
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'aTSA'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:graphics':
+## 
+##     identify
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: zoo
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'zoo'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: forecast
+\end{verbatim}
+
+\begin{verbatim}
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'forecast'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:aTSA':
+## 
+##     forecast
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'FinTS'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:forecast':
+## 
+##     Acf
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: parallel
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'rugarch'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:fBasics':
+## 
+##     qgh, qnig
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:stats':
+## 
+##     sigma
+\end{verbatim}
+
+\section{Dataset}\label{dataset}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#df1 = read.csv("stocks\_adj\_prices1.csv")[1:504,]}
+\NormalTok{df2 }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"stocks\_adj\_prices2.csv"}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{753}\NormalTok{,]}
+\NormalTok{stock\_df }\OtherTok{=}\NormalTok{ df2}
+\end{Highlighting}
+\end{Shaded}
+
+The stock prioces given below is the adjusted prices
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(zoo)}
+\FunctionTok{require}\NormalTok{(forecast)}
+
+
+
+\FunctionTok{head}\NormalTok{(stock\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Date     AAPL     MSFT     META        V      JPM        C  BTC.USD
+## 1 2022-01-03 178.6457 325.0381 336.9520 215.6605 146.9958 55.07719 46458.12
+## 2 2022-01-04 176.3783 319.4646 334.9514 216.6637 152.5684 55.50489 45897.57
+## 3 2022-01-05 171.6867 307.2010 322.6494 214.2678 149.7791 54.85898 43569.00
+## 4 2022-01-06 168.8207 304.7735 330.9005 214.0243 151.3704 56.65707 43160.93
+## 5 2022-01-07 168.9876 304.9289 330.2336 211.3070 152.8702 57.41645 41557.90
+## 6 2022-01-10 169.0072 305.1522 326.5311 206.4470 153.0165 57.63466 41821.26
+##    UEC       GM       ET
+## 1 3.70 59.47835 6.530941
+## 2 3.81 63.92197 6.688404
+## 3 3.86 61.00493 6.605924
+## 4 3.68 61.13134 6.808375
+## 5 3.88 60.54793 6.928347
+## 6 3.76 59.38111 6.838368
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{tail}\NormalTok{(stock\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           Date     AAPL     MSFT     META        V      JPM        C  BTC.USD
+## 748 2024-12-23 254.6557 433.5830 599.3168 316.1620 235.7132 68.74049 94686.24
+## 749 2024-12-24 257.5787 437.6474 607.2098 319.5806 239.5892 69.95235 98676.09
+## 750 2024-12-26 258.3967 436.4321 602.8137 319.8398 240.4099 70.29719 95795.52
+## 751 2024-12-27 254.9749 428.8811 599.2769 317.5972 238.4620 69.95235 94164.86
+## 752 2024-12-30 251.5931 423.2029 590.7144 314.2584 236.6328 69.35135 92643.21
+## 753 2024-12-31 249.8174 419.8857 584.9896 314.9860 237.0184 69.35135 93429.20
+##      UEC       GM       ET
+## 748 7.20 52.42637 18.38242
+## 749 7.14 53.37395 18.92308
+## 750 7.23 54.04226 18.59482
+## 751 7.01 54.14200 18.61413
+## 752 6.87 53.52357 18.89412
+## 753 6.69 53.13457 18.91343
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#View(stock\_df)}
+\CommentTok{\#unique(is.na.data.frame(stock\_df)) \#no NA}
+
+\FunctionTok{rownames}\NormalTok{(stock\_df)}\OtherTok{\textless{}{-}}\FunctionTok{as.Date}\NormalTok{(stock\_df[,}\DecValTok{1}\NormalTok{]);stock\_df}\OtherTok{\textless{}{-}}\NormalTok{stock\_df[,}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{]}
+\NormalTok{stock\_df }\OtherTok{=} \FunctionTok{zoo}\NormalTok{(stock\_df, }\AttributeTok{order.by =} \FunctionTok{rownames}\NormalTok{(stock\_df))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stock\_df\_train}\OtherTok{\textless{}{-}}\FunctionTok{train\_test}\NormalTok{(stock\_df)}\SpecialCharTok{$}\NormalTok{train}
+\NormalTok{stock\_df\_test}\OtherTok{\textless{}{-}}\FunctionTok{train\_test}\NormalTok{(stock\_df)}\SpecialCharTok{$}\NormalTok{test}
+\end{Highlighting}
+\end{Shaded}
+
+For simplicity, we first consider one stock. We will generalize further
+into multiple stocks \# EDA
+
+\subsection{Basic EDA}\label{basic-eda}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{basic\_eda}\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(series,}\AttributeTok{cutoff =} \ConstantTok{NULL}\NormalTok{,lag, }\AttributeTok{x\_1 =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{y\_1 =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{x\_2 =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{y\_2 =} \ConstantTok{NULL}\NormalTok{)\{}
+\NormalTok{  layout\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{,}
+                            \DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+                          \AttributeTok{nrow =} \DecValTok{2}\NormalTok{, }\AttributeTok{byrow =} \ConstantTok{TRUE}\NormalTok{)}
+
+  \FunctionTok{layout}\NormalTok{(layout\_matrix)}
+
+  \FunctionTok{ts.plot}\NormalTok{(series)}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.null}\NormalTok{(x\_1) }\SpecialCharTok{==} \ConstantTok{FALSE} \SpecialCharTok{\&} \FunctionTok{is.null}\NormalTok{(y\_1) }\SpecialCharTok{==} \ConstantTok{FALSE}\SpecialCharTok{\&} \FunctionTok{is.null}\NormalTok{(x\_2) }\SpecialCharTok{==} \ConstantTok{FALSE}\SpecialCharTok{\&} \FunctionTok{is.null}\NormalTok{(y\_2) }\SpecialCharTok{==} \ConstantTok{FALSE} \SpecialCharTok{\&} \FunctionTok{is.null}\NormalTok{(cutoff) }\SpecialCharTok{==} \ConstantTok{FALSE}\NormalTok{)\{}
+    \FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ cutoff, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+    \FunctionTok{text}\NormalTok{(x\_1,y\_1, }\StringTok{"training data"}\NormalTok{)}
+    \FunctionTok{text}\NormalTok{(x\_2,y\_2, }\StringTok{"test data"}\NormalTok{)\}}
+
+
+  \FunctionTok{acf}\NormalTok{(series, lag);}\FunctionTok{pacf}\NormalTok{(series,lag)}
+
+
+  \FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{basic\_eda}\NormalTok{(stock\_df[,}\DecValTok{1}\NormalTok{], }\AttributeTok{lag =} \DecValTok{52}\NormalTok{, }\AttributeTok{cutoff =} \FunctionTok{which}\NormalTok{(}
+           \FunctionTok{index}\NormalTok{(stock\_df)}\SpecialCharTok{\textgreater{}=} \FunctionTok{as.Date}\NormalTok{(}\StringTok{"2024{-}01{-}01"}\NormalTok{)}
+\NormalTok{           )[}\DecValTok{1}\NormalTok{]}
+\NormalTok{          ,}\AttributeTok{x\_1 =} \DecValTok{300}\NormalTok{, }\AttributeTok{y\_1 =} \DecValTok{200}\NormalTok{,}
+          \AttributeTok{x\_2 =} \DecValTok{600}\NormalTok{, }\AttributeTok{y\_2 =} \DecValTok{140}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in as.ts.zoo(x): 'x' does not have an underlying regularity
+## Warning in as.ts.zoo(x): 'x' does not have an underlying regularity
+## Warning in as.ts.zoo(x): 'x' does not have an underlying regularity
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-6-1.pdf}}
+
+\subsubsection{using log\_returns}\label{using-log_returns}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aapl\_train}\OtherTok{\textless{}{-}}\NormalTok{stock\_df\_train[,}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{calculate\_returns }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(stock\_df, }\AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\StringTok{"log"}\NormalTok{, }\StringTok{"simple"}\NormalTok{)) \{}
+\NormalTok{  type }\OtherTok{\textless{}{-}} \FunctionTok{match.arg}\NormalTok{(type)}
+
+  \CommentTok{\# Extract dates and prices}
+\NormalTok{  dates }\OtherTok{\textless{}{-}} \FunctionTok{index}\NormalTok{(stock\_df)}
+\NormalTok{  prices }\OtherTok{\textless{}{-}}\NormalTok{ stock\_df}
+
+  \CommentTok{\# Compute returns}
+  \ControlFlowTok{if}\NormalTok{ (type }\SpecialCharTok{==} \StringTok{"log"}\NormalTok{ ) \{}
+\NormalTok{    returns }\OtherTok{\textless{}{-}} \FunctionTok{diff}\NormalTok{(}\FunctionTok{log}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices)))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    returns }\OtherTok{\textless{}{-}} \FunctionTok{diff}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices)) }\SpecialCharTok{/} \FunctionTok{head}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices), }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+
+  \CommentTok{\# Adjust dates to match the return periods}
+\NormalTok{  return\_dates }\OtherTok{\textless{}{-}}\NormalTok{ dates[}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{]}
+
+  \CommentTok{\# Combine into a new data frame}
+\NormalTok{  return\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(returns)}
+  \FunctionTok{colnames}\NormalTok{(return\_df) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(stock\_df)}
+  \FunctionTok{return}\NormalTok{(return\_df)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aapl\_return\_train}\OtherTok{\textless{}{-}} \FunctionTok{calculate\_returns}\NormalTok{(}\FunctionTok{as.zoo}\NormalTok{(aapl\_train), }\StringTok{"log"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(aapl\_return\_train)}\OtherTok{\textless{}{-}} \StringTok{"AAPL"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ts.plot}\NormalTok{(aapl\_return\_train)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-10-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hist}\NormalTok{((aapl\_return\_train}\SpecialCharTok{$}\NormalTok{AAPL), }\AttributeTok{breaks =} \DecValTok{30}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-11-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{requireNamespace}\NormalTok{(}\StringTok{"fBasics"}\NormalTok{, }\AttributeTok{quietly =} \ConstantTok{TRUE}\NormalTok{)) }\FunctionTok{install.packages}\NormalTok{(}\StringTok{"fBasics"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(fBasics)}
+
+\NormalTok{basic\_stats }\OtherTok{\textless{}{-}} \FunctionTok{basicStats}\NormalTok{(aapl\_return\_train)}
+\FunctionTok{print}\NormalTok{(basic\_stats[}\FunctionTok{c}\NormalTok{(}\StringTok{"Mean"}\NormalTok{, }\StringTok{"Variance"}\NormalTok{, }\StringTok{"Skewness"}\NormalTok{, }\StringTok{"Kurtosis"}\NormalTok{), ])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.000135 0.000335 0.065181 1.823879
+\end{verbatim}
+
+\subsubsection{stationarity test}\label{stationarity-test}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#install.packages("aTSA")}
+\FunctionTok{require}\NormalTok{(aTSA)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stationarity\_tests}\NormalTok{(aapl\_return\_train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Augmented Dickey-Fuller Test 
+## alternative: stationary 
+##  
+## Type 1: no drift no trend 
+##      lag    ADF p.value
+## [1,]   0 -22.31    0.01
+## [2,]   1 -16.91    0.01
+## [3,]   2 -13.49    0.01
+## [4,]   3 -11.71    0.01
+## [5,]   4  -9.71    0.01
+## [6,]   5  -8.86    0.01
+## Type 2: with drift no trend 
+##      lag    ADF p.value
+## [1,]   0 -22.29    0.01
+## [2,]   1 -16.89    0.01
+## [3,]   2 -13.48    0.01
+## [4,]   3 -11.70    0.01
+## [5,]   4  -9.70    0.01
+## [6,]   5  -8.86    0.01
+## Type 3: with drift and trend 
+##      lag    ADF p.value
+## [1,]   0 -22.33    0.01
+## [2,]   1 -16.93    0.01
+## [3,]   2 -13.52    0.01
+## [4,]   3 -11.75    0.01
+## [5,]   4  -9.75    0.01
+## [6,]   5  -8.92    0.01
+## ---- 
+## Note: in fact, p.value = 0.01 means p.value <= 0.01 
+## [1] "----------------------------------------------"
+## [1] "----------------------------------------------"
+## KPSS Unit Root Test 
+## alternative: nonstationary 
+##  
+## Type 1: no drift no trend 
+##  lag  stat p.value
+##    5 0.137     0.1
+## ----- 
+##  Type 2: with drift no trend 
+##  lag  stat p.value
+##    5 0.183     0.1
+## ----- 
+##  Type 1: with drift and trend 
+##  lag   stat p.value
+##    5 0.0411     0.1
+## ----------- 
+## Note: p.value = 0.01 means p.value <= 0.01 
+##     : p.value = 0.10 means p.value >= 0.10
+\end{verbatim}
+
+\subsubsection{ARMA-GARCH modelling}\label{arma-garch-modelling}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{acf\_pacf\_ret}\NormalTok{(aapl\_return\_train, }\AttributeTok{lag =} \DecValTok{52}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-15-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(FinTS)}
+
+  \FunctionTok{arch\_test}\NormalTok{(aapl\_return\_train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Lag Statistic P_Value
+## 1    1  7.255723  0.0071
+## 2    2  7.285730  0.0262
+## 3    3  8.540395  0.0361
+## 4    4 15.885260  0.0032
+## 5    5 24.372180  0.0002
+## 6    6 24.622408  0.0004
+## 7    7 24.741427  0.0008
+## 8    8 24.936153  0.0016
+## 9    9 50.978302  0.0000
+## 10  10 51.566909  0.0000
+## 11  11 54.076452  0.0000
+## 12  12 54.390574  0.0000
+\end{verbatim}
+
+Indicating we need GARCH model
+
+We use GARCH(1,1) with ARMA model order determined using AIC/BIC
+criterion But first we check under ARMA(0,0)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rugarch)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{spec }\OtherTok{\textless{}{-}} \FunctionTok{ugarchspec}\NormalTok{(}
+  \AttributeTok{variance.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{model =} \StringTok{"sGARCH"}\NormalTok{, }\AttributeTok{garchOrder =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)),}
+  \AttributeTok{mean.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{armaOrder =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{), }\AttributeTok{include.mean =} \ConstantTok{TRUE}\NormalTok{),}
+  \AttributeTok{distribution.model =} \StringTok{"norm"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_aapl\_train}\OtherTok{\textless{}{-}}\FunctionTok{ugarchfit}\NormalTok{(spec,aapl\_return\_train)}
+\NormalTok{fit\_aapl\_train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## *---------------------------------*
+## *          GARCH Model Fit        *
+## *---------------------------------*
+## 
+## Conditional Variance Dynamics    
+## -----------------------------------
+## GARCH Model  : sGARCH(0,1)
+## Mean Model   : ARFIMA(0,0,0)
+## Distribution : norm 
+## 
+## Optimal Parameters
+## ------------------------------------
+##        Estimate  Std. Error    t value Pr(>|t|)
+## mu     0.000303    0.001543    0.19663  0.84412
+## omega  0.000000    0.000001    0.00000  1.00000
+## beta1  0.998960    0.000213 4680.43448  0.00000
+## 
+## Robust Standard Errors:
+##        Estimate  Std. Error    t value Pr(>|t|)
+## mu     0.000303    0.005149 5.8937e-02    0.953
+## omega  0.000000    0.000005 0.0000e+00    1.000
+## beta1  0.998960    0.000732 1.3639e+03    0.000
+## 
+## LogLikelihood : 1300.228 
+## 
+## Information Criteria
+## ------------------------------------
+##                     
+## Akaike       -5.1889
+## Bayes        -5.1636
+## Shibata      -5.1890
+## Hannan-Quinn -5.1790
+## 
+## Weighted Ljung-Box Test on Standardized Residuals
+## ------------------------------------
+##                         statistic p-value
+## Lag[1]                   0.002722  0.9584
+## Lag[2*(p+q)+(p+q)-1][2]  1.038696  0.4859
+## Lag[4*(p+q)+(p+q)-1][5]  2.106213  0.5935
+## d.o.f=0
+## H0 : No serial correlation
+## 
+## Weighted Ljung-Box Test on Standardized Squared Residuals
+## ------------------------------------
+##                         statistic  p-value
+## Lag[1]                      5.963 0.014606
+## Lag[2*(p+q)+(p+q)-1][2]     5.967 0.022454
+## Lag[4*(p+q)+(p+q)-1][5]    10.689 0.006119
+## d.o.f=1
+## 
+## Weighted ARCH LM Tests
+## ------------------------------------
+##             Statistic Shape Scale P-Value
+## ARCH Lag[2]  0.006219 0.500 2.000 0.93714
+## ARCH Lag[4]  3.383510 1.397 1.611 0.21388
+## ARCH Lag[6]  9.692723 2.222 1.500 0.01637
+## 
+## Nyblom stability test
+## ------------------------------------
+## Joint Statistic:  72.4667
+## Individual Statistics:             
+## mu     0.1546
+## omega 17.4629
+## beta1  2.2053
+## 
+## Asymptotic Critical Values (10% 5% 1%)
+## Joint Statistic:          0.846 1.01 1.35
+## Individual Statistic:     0.35 0.47 0.75
+## 
+## Sign Bias Test
+## ------------------------------------
+##                    t-value     prob sig
+## Sign Bias           0.5097 0.610497    
+## Negative Sign Bias  2.6899 0.007388 ***
+## Positive Sign Bias  1.8076 0.071275   *
+## Joint Effect       12.9055 0.004845 ***
+## 
+## 
+## Adjusted Pearson Goodness-of-Fit Test:
+## ------------------------------------
+##   group statistic p-value(g-1)
+## 1    20     15.92       0.6626
+## 2    30     30.28       0.4001
+## 3    40     38.88       0.4753
+## 4    50     56.20       0.2233
+## 
+## 
+## Elapsed time : 0.04394698
+\end{verbatim}
+
+We will find ARMA order of Garch 1-1
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{arma\_garch\_ic\_plot}\NormalTok{(aapl\_return\_train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## i Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-20-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-20-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rugarch)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# \# Compute mean of each metric for every model}
+\CommentTok{\# cv\_output\textless{}{-}arma\_garch\_cv(aapl\_return\_train$AAPL)}
+\CommentTok{\# }
+\CommentTok{\# cv\_summary \textless{}{-} do.call(rbind, lapply(names(cv\_output$results), function(name) \{}
+\CommentTok{\#   metrics \textless{}{-} cv\_output$results[[name]]}
+\CommentTok{\#   data.frame(}
+\CommentTok{\#     Model = name,}
+\CommentTok{\#     MSE = mean(metrics$MSE, na.rm = TRUE),}
+\CommentTok{\#     MAE = mean(metrics$MAE, na.rm = TRUE),}
+\CommentTok{\#     NegLogLik = mean(metrics$NegLogLik, na.rm = TRUE),}
+\CommentTok{\#     AIC = mean(metrics$AIC, na.rm = TRUE),}
+\CommentTok{\#     BIC = mean(metrics$BIC, na.rm = TRUE)}
+\CommentTok{\#   )}
+\CommentTok{\# \}))}
+\CommentTok{\# library(ggplot2)}
+\CommentTok{\# library(tidyr)}
+\CommentTok{\# }
+\CommentTok{\# \# Ensure models are ordered as factors (helps with plotting)}
+\CommentTok{\# cv\_summary$Model \textless{}{-} factor(cv\_summary$Model, levels = unique(cv\_summary$Model))}
+\CommentTok{\# }
+\CommentTok{\# \# Convert to long format}
+\CommentTok{\# cv\_long \textless{}{-} pivot\_longer(cv\_summary, cols = {-}Model, names\_to = "Metric", values\_to = "Value")}
+\CommentTok{\# }
+\CommentTok{\# \# Plot AIC and BIC}
+\CommentTok{\# ggplot(cv\_long[cv\_long$Metric \%in\% c("AIC", "BIC"), ], }
+\CommentTok{\#        aes(x = Model, y = Value, group = Metric, color = Metric)) +}
+\CommentTok{\#   geom\_line(size = 1) +}
+\CommentTok{\#   geom\_point(size = 2) +}
+\CommentTok{\#   labs(title = "Cross{-}Validated AIC and BIC for ARMA{-}GARCH Models",}
+\CommentTok{\#        x = "Model", y = "Average Value") +}
+\CommentTok{\#   theme\_minimal() +}
+\CommentTok{\#   theme(axis.text.x = element\_text(angle = 45, hjust = 1))}
+\end{Highlighting}
+\end{Shaded}
+
+Our final model is IGARCH(3,0,3)(0,1)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{spec }\OtherTok{\textless{}{-}} \FunctionTok{ugarchspec}\NormalTok{(}
+  \AttributeTok{variance.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{model =} \StringTok{"sGARCH"}\NormalTok{, }\AttributeTok{garchOrder =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)),}
+  \AttributeTok{mean.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{armaOrder =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{), }\AttributeTok{include.mean =} \ConstantTok{TRUE}\NormalTok{),}
+  \AttributeTok{distribution.model =} \StringTok{"norm"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_aapl\_train}\OtherTok{\textless{}{-}}\FunctionTok{ugarchfit}\NormalTok{(spec,aapl\_return\_train)}
+\NormalTok{fit\_aapl\_train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## *---------------------------------*
+## *          GARCH Model Fit        *
+## *---------------------------------*
+## 
+## Conditional Variance Dynamics    
+## -----------------------------------
+## GARCH Model  : sGARCH(0,1)
+## Mean Model   : ARFIMA(3,0,3)
+## Distribution : norm 
+## 
+## Optimal Parameters
+## ------------------------------------
+##        Estimate  Std. Error    t value Pr(>|t|)
+## mu     0.000372    0.000777     0.4783  0.63244
+## ar1   -0.683727    0.005441  -125.6635  0.00000
+## ar2   -0.585641    0.031029   -18.8740  0.00000
+## ar3   -0.833909    0.048267   -17.2769  0.00000
+## ma1    0.727526    0.001006   723.1014  0.00000
+## ma2    0.553765    0.001213   456.6657  0.00000
+## ma3    0.828957    0.000711  1165.9691  0.00000
+## omega  0.000000    0.000001     0.0000  1.00000
+## beta1  0.998926    0.000043 22998.1440  0.00000
+## 
+## Robust Standard Errors:
+##        Estimate  Std. Error    t value Pr(>|t|)
+## mu     0.000372    0.000911    0.40804  0.68324
+## ar1   -0.683727    0.061143  -11.18242  0.00000
+## ar2   -0.585641    0.104296   -5.61515  0.00000
+## ar3   -0.833909    0.143438   -5.81374  0.00000
+## ma1    0.727526    0.002946  246.96999  0.00000
+## ma2    0.553765    0.002824  196.10903  0.00000
+## ma3    0.828957    0.002152  385.17938  0.00000
+## omega  0.000000    0.000005    0.00000  1.00000
+## beta1  0.998926    0.000132 7546.73380  0.00000
+## 
+## LogLikelihood : 1305.298 
+## 
+## Information Criteria
+## ------------------------------------
+##                     
+## Akaike       -5.1852
+## Bayes        -5.1093
+## Shibata      -5.1858
+## Hannan-Quinn -5.1554
+## 
+## Weighted Ljung-Box Test on Standardized Residuals
+## ------------------------------------
+##                          statistic p-value
+## Lag[1]                      0.3373  0.5614
+## Lag[2*(p+q)+(p+q)-1][17]    3.4122  1.0000
+## Lag[4*(p+q)+(p+q)-1][29]    8.0901  0.9977
+## d.o.f=6
+## H0 : No serial correlation
+## 
+## Weighted Ljung-Box Test on Standardized Squared Residuals
+## ------------------------------------
+##                         statistic p-value
+## Lag[1]                      3.101 0.07823
+## Lag[2*(p+q)+(p+q)-1][2]     3.111 0.13090
+## Lag[4*(p+q)+(p+q)-1][5]     7.874 0.03166
+## d.o.f=1
+## 
+## Weighted ARCH LM Tests
+## ------------------------------------
+##             Statistic Shape Scale P-Value
+## ARCH Lag[2]   0.02006 0.500 2.000 0.88736
+## ARCH Lag[4]   3.22426 1.397 1.611 0.23294
+## ARCH Lag[6]   9.90208 2.222 1.500 0.01456
+## 
+## Nyblom stability test
+## ------------------------------------
+## Joint Statistic:  75.1139
+## Individual Statistics:              
+## mu     0.16757
+## ar1    0.08099
+## ar2    0.27448
+## ar3    0.16387
+## ma1    0.25499
+## ma2    0.24430
+## ma3    0.25682
+## omega 17.74997
+## beta1  2.18139
+## 
+## Asymptotic Critical Values (10% 5% 1%)
+## Joint Statistic:          2.1 2.32 2.82
+## Individual Statistic:     0.35 0.47 0.75
+## 
+## Sign Bias Test
+## ------------------------------------
+##                    t-value    prob sig
+## Sign Bias           0.7159 0.47439    
+## Negative Sign Bias  2.0430 0.04158  **
+## Positive Sign Bias  1.5344 0.12556    
+## Joint Effect        9.0047 0.02923  **
+## 
+## 
+## Adjusted Pearson Goodness-of-Fit Test:
+## ------------------------------------
+##   group statistic p-value(g-1)
+## 1    20     11.36      0.91113
+## 2    30     39.76      0.08794
+## 3    40     52.16      0.07738
+## 4    50     66.20      0.05119
+## 
+## 
+## Elapsed time : 0.1918602
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(fit\_aapl\_train, }\AttributeTok{which =} \StringTok{"all"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## please wait...calculating quantiles...
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-25-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ugarchforecast}\NormalTok{(}\AttributeTok{fitORspec =}\NormalTok{ fit\_aapl\_train, }\AttributeTok{data =}\NormalTok{ stock\_df\_test[,}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## *------------------------------------*
+## *       GARCH Model Forecast         *
+## *------------------------------------*
+## Model: sGARCH
+## Horizon: 10
+## Roll Steps: 0
+## Out of Sample: 0
+## 
+## 0-roll forecast [T0=2023-12-29]:
+##         Series   Sigma
+## T+1  -0.003894 0.01384
+## T+2   0.004615 0.01383
+## T+3  -0.002672 0.01382
+## T+4   0.003525 0.01382
+## T+5  -0.003541 0.01381
+## T+6   0.003738 0.01380
+## T+7  -0.002269 0.01379
+## T+8   0.003468 0.01379
+## T+9  -0.003006 0.01378
+## T+10  0.003070 0.01377
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aapl\_forecast}\OtherTok{\textless{}{-}}\FunctionTok{ugarchforecast}\NormalTok{(}\AttributeTok{fitORspec =}\NormalTok{ fit\_aapl\_train, }\AttributeTok{data =}\NormalTok{ stock\_df\_test[,}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Risk Averse optimizaiton}\label{risk-averse-optimizaiton}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{calculate\_garch\_var\_cvar }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(garch\_forecast, }\AttributeTok{confidence\_level =} \FloatTok{0.95}\NormalTok{, }\AttributeTok{distribution =} \StringTok{"norm"}\NormalTok{) \{}
+  
+\NormalTok{  alpha }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ confidence\_level}
+  
+  \CommentTok{\# Extract GARCH forecasts}
+\NormalTok{  means }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(garch\_forecast}\SpecialCharTok{@}\NormalTok{forecast}\SpecialCharTok{$}\NormalTok{seriesFor)  }\CommentTok{\# Conditional mean (μₜ)}
+\NormalTok{  sigmas }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(garch\_forecast}\SpecialCharTok{@}\NormalTok{forecast}\SpecialCharTok{$}\NormalTok{sigmaFor)  }\CommentTok{\# Conditional volatility (σₜ)}
+  
+  \CommentTok{\# Calculate VaR and CVaR for each period}
+  \ControlFlowTok{if}\NormalTok{ (distribution }\SpecialCharTok{==} \StringTok{"norm"}\NormalTok{) \{}
+    \CommentTok{\# Gaussian innovation assumption}
+\NormalTok{    var }\OtherTok{\textless{}{-}}\NormalTok{ means }\SpecialCharTok{+}\NormalTok{ sigmas }\SpecialCharTok{*} \FunctionTok{qnorm}\NormalTok{(alpha)}
+\NormalTok{    cvar }\OtherTok{\textless{}{-}}\NormalTok{ means }\SpecialCharTok{{-}}\NormalTok{ sigmas }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{dnorm}\NormalTok{(}\FunctionTok{qnorm}\NormalTok{(alpha)) }\SpecialCharTok{/}\NormalTok{ alpha)}
+\NormalTok{  \} }
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (distribution }\SpecialCharTok{==} \StringTok{"std"}\NormalTok{) \{}
+    \CommentTok{\# Student\textquotesingle{}s t{-}distribution (adjust for degrees of freedom if needed)}
+\NormalTok{    df }\OtherTok{\textless{}{-}}\NormalTok{ garch\_forecast}\SpecialCharTok{@}\NormalTok{model}\SpecialCharTok{$}\NormalTok{pars[}\StringTok{"shape"}\NormalTok{, }\DecValTok{1}\NormalTok{]  }\CommentTok{\# Degrees of freedom if using t{-}GARCH}
+\NormalTok{    var }\OtherTok{\textless{}{-}}\NormalTok{ means }\SpecialCharTok{+}\NormalTok{ sigmas }\SpecialCharTok{*} \FunctionTok{qt}\NormalTok{(alpha, }\AttributeTok{df =}\NormalTok{ df)}
+\NormalTok{    cvar }\OtherTok{\textless{}{-}}\NormalTok{ means }\SpecialCharTok{{-}}\NormalTok{ sigmas }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{dt}\NormalTok{(}\FunctionTok{qt}\NormalTok{(alpha, }\AttributeTok{df =}\NormalTok{ df), }\AttributeTok{df =}\NormalTok{ df) }\SpecialCharTok{/}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ ((df }\SpecialCharTok{+} \FunctionTok{qt}\NormalTok{(alpha, }\AttributeTok{df =}\NormalTok{ df)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ (df }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{))}
+
+\NormalTok{  \}}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}
+    \AttributeTok{Period\_VaR =}\NormalTok{ var,}
+    \AttributeTok{Period\_CVaR =}\NormalTok{ cvar,}
+    \AttributeTok{Average\_VaR =} \FunctionTok{mean}\NormalTok{(var),}
+    \AttributeTok{Average\_CVaR =} \FunctionTok{mean}\NormalTok{(cvar),}
+    \AttributeTok{Worst\_VaR =} \FunctionTok{min}\NormalTok{(var),}
+    \AttributeTok{Worst\_CVaR =} \FunctionTok{min}\NormalTok{(cvar)}
+\NormalTok{  ))}
+\NormalTok{\}}
+
+
+\NormalTok{results }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_garch\_var\_cvar}\NormalTok{(aapl\_forecast)}
+\FunctionTok{print}\NormalTok{(results)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $Period_VaR
+##  [1] -0.02665718 -0.01813548 -0.02541037 -0.01920104 -0.02625447 -0.01896381
+##  [7] -0.02495801 -0.01920956 -0.02567141 -0.01958338
+## 
+## $Period_CVaR
+##  [1] -0.03243983 -0.02391503 -0.03118681 -0.02497438 -0.03202472 -0.02473096
+##  [7] -0.03072206 -0.02497051 -0.03142927 -0.02533815
+## 
+## $Average_VaR
+## [1] -0.02240447
+## 
+## $Average_CVaR
+## [1] -0.02817317
+## 
+## $Worst_VaR
+## [1] -0.02665718
+## 
+## $Worst_CVaR
+## [1] -0.03243983
+\end{verbatim}
+
+\section{Modelling 10 stocks}\label{modelling-10-stocks}
+
+\subsection{ARMA-GARCH model
+selection}\label{arma-garch-model-selection}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(stock\_df\_train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                AAPL     MSFT     META        V      JPM        C  BTC.USD  UEC
+## 2022-01-03 178.6457 325.0381 336.9520 215.6605 146.9958 55.07719 46458.12 3.70
+## 2022-01-04 176.3783 319.4646 334.9514 216.6637 152.5684 55.50489 45897.57 3.81
+## 2022-01-05 171.6867 307.2010 322.6494 214.2678 149.7791 54.85898 43569.00 3.86
+## 2022-01-06 168.8207 304.7735 330.9005 214.0243 151.3704 56.65707 43160.93 3.68
+## 2022-01-07 168.9876 304.9289 330.2336 211.3070 152.8702 57.41645 41557.90 3.88
+## 2022-01-10 169.0072 305.1522 326.5311 206.4470 153.0165 57.63466 41821.26 3.76
+##                  GM       ET
+## 2022-01-03 59.47835 6.530941
+## 2022-01-04 63.92197 6.688404
+## 2022-01-05 61.00493 6.605924
+## 2022-01-06 61.13134 6.808375
+## 2022-01-07 60.54793 6.928347
+## 2022-01-10 59.38111 6.838368
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(stock\_df\_test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                AAPL     MSFT     META        V      JPM        C  BTC.USD  UEC
+## 2024-01-02 184.2904 366.7074 344.6656 256.0495 166.1795 50.38167 44957.97 6.44
+## 2024-01-03 182.9105 366.4404 342.8541 255.1692 165.4553 50.95160 42848.18 6.33
+## 2024-01-04 180.5875 363.8103 345.4917 256.7814 166.5532 51.07508 44179.92 6.45
+## 2024-01-05 179.8628 363.6224 350.2991 256.8605 167.3889 51.60702 44162.69 6.41
+## 2024-01-08 184.2110 370.4845 356.9776 259.6795 167.1460 51.30305 46970.50 6.45
+## 2024-01-09 183.7940 371.5722 355.7534 260.4609 165.8245 50.79961 46139.73 6.76
+##                  GM       ET
+## 2024-01-02 35.58853 12.36216
+## 2024-01-03 34.81852 12.48685
+## 2024-01-04 35.03570 12.35325
+## 2024-01-05 35.52930 12.42450
+## 2024-01-08 36.23021 12.45122
+## 2024-01-09 36.07226 12.46903
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# log returns}
+
+
+\NormalTok{calculate\_returns }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(stock\_df, }\AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\StringTok{"log"}\NormalTok{, }\StringTok{"simple"}\NormalTok{)) \{}
+\NormalTok{  type }\OtherTok{\textless{}{-}} \FunctionTok{match.arg}\NormalTok{(type)}
+
+  \CommentTok{\# Extract dates and prices}
+\NormalTok{  dates }\OtherTok{\textless{}{-}} \FunctionTok{index}\NormalTok{(stock\_df)}
+\NormalTok{  prices }\OtherTok{\textless{}{-}}\NormalTok{ stock\_df}
+
+  \CommentTok{\# Compute returns}
+  \ControlFlowTok{if}\NormalTok{ (type }\SpecialCharTok{==} \StringTok{"log"}\NormalTok{ ) \{}
+\NormalTok{    returns }\OtherTok{\textless{}{-}} \FunctionTok{diff}\NormalTok{(}\FunctionTok{log}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices)))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    returns }\OtherTok{\textless{}{-}} \FunctionTok{diff}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices)) }\SpecialCharTok{/} \FunctionTok{head}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(prices), }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+
+  \CommentTok{\# Adjust dates to match the return periods}
+\NormalTok{  return\_dates }\OtherTok{\textless{}{-}}\NormalTok{ dates[}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{]}
+
+  \CommentTok{\# Combine into a new data frame}
+\NormalTok{  return\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(returns)}
+  \FunctionTok{colnames}\NormalTok{(return\_df) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(stock\_df)}
+  \FunctionTok{return}\NormalTok{(return\_df)}
+\NormalTok{\}}
+
+
+\NormalTok{stock\_return}\OtherTok{\textless{}{-}}\FunctionTok{calculate\_returns}\NormalTok{(stock\_df\_train, }\AttributeTok{type =} \StringTok{"log"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# for (i in 1:ncol(stock\_return))\{}
+\CommentTok{\#   stationarity\_tests(stock\_return[,i])}
+\CommentTok{\# \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#install.packages("corrplot")}
+\FunctionTok{library}\NormalTok{(corrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## corrplot 0.95 loaded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{corrplot}\NormalTok{(}\FunctionTok{cor}\NormalTok{(stock\_return), }\AttributeTok{method =} \StringTok{\textquotesingle{}square\textquotesingle{}}\NormalTok{) }\CommentTok{\#pearson corrlastion}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-33-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{corrplot}\NormalTok{(}\FunctionTok{cor}\NormalTok{(stock\_return, }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{, }\AttributeTok{use =} \StringTok{"complete.obs"}\NormalTok{), }\AttributeTok{method =} \StringTok{\textquotesingle{}square\textquotesingle{}}\NormalTok{) }\CommentTok{\#Kendall tau}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-34-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{ncol}\NormalTok{(stock\_return))\{}
+  \FunctionTok{plot}\NormalTok{(stock\_return[,i], }\AttributeTok{type =} \StringTok{\textquotesingle{}l\textquotesingle{}}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{colnames}\NormalTok{(stock\_return)[i])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-35-10.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{ncol}\NormalTok{(stock\_return))\{}
+  \FunctionTok{basic\_eda}\NormalTok{(stock\_return[,i], }\AttributeTok{lag =} \DecValTok{52}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-36-10.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# library(xts)}
+\CommentTok{\# print(colnames(stock\_return))}
+\CommentTok{\# for (i in 1:ncol(stock\_return)) \{}
+\CommentTok{\#   current\_plot \textless{}{-} arma\_garch\_ic\_plot(stock\_return[,i], }
+\CommentTok{\#                                    arma\_p\_range = 0:4, }
+\CommentTok{\#                                    arma\_q\_range = 0:4,}
+\CommentTok{\#                                    output = "plot")}
+\CommentTok{\# }
+\CommentTok{\# \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arma\_order }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{stock =} \FunctionTok{c}\NormalTok{(}\StringTok{"AAPL"}\NormalTok{, }\StringTok{"MSFT"}\NormalTok{, }\StringTok{"META"}\NormalTok{, }\StringTok{"V"}\NormalTok{, }\StringTok{"JPM"}\NormalTok{, }\StringTok{"C"}\NormalTok{, }\StringTok{"BTC.USD"}\NormalTok{, }\StringTok{"UEC"}\NormalTok{, }\StringTok{"GM"}\NormalTok{, }\StringTok{"ET"}\NormalTok{),}
+  \AttributeTok{ar =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+  \AttributeTok{ma =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{ARMA-GARCH modelling}\label{arma-garch-modelling-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arma\_garch\_fits}\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:} \FunctionTok{ncol}\NormalTok{(stock\_df\_train))\{}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(stock\_df\_train)[i])}
+\NormalTok{  spec }\OtherTok{\textless{}{-}} \FunctionTok{ugarchspec}\NormalTok{(}
+  \AttributeTok{variance.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{model =} \StringTok{"sGARCH"}\NormalTok{, }\AttributeTok{garchOrder =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)),}
+  \AttributeTok{mean.model =} \FunctionTok{list}\NormalTok{(}\AttributeTok{armaOrder =} \FunctionTok{c}\NormalTok{(arma\_order}\SpecialCharTok{$}\NormalTok{ar[i], arma\_order}\SpecialCharTok{$}\NormalTok{ma[i]), }\AttributeTok{include.mean =} \ConstantTok{TRUE}\NormalTok{),}
+  \AttributeTok{distribution.model =} \StringTok{"norm"}
+\NormalTok{)}
+  
+\NormalTok{  asset}\OtherTok{\textless{}{-}}\NormalTok{stock\_return[,i]}
+\NormalTok{  fit}\OtherTok{\textless{}{-}}\FunctionTok{ugarchfit}\NormalTok{(spec,}\AttributeTok{data =}\NormalTok{ asset, }\AttributeTok{solver =} \StringTok{"hybrid"}\NormalTok{)}
+\NormalTok{  arma\_garch\_fits[[}\FunctionTok{colnames}\NormalTok{(stock\_return)[i]]]}\OtherTok{\textless{}{-}}\NormalTok{fit}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "AAPL"
+## [1] "MSFT"
+## [1] "META"
+## [1] "V"
+## [1] "JPM"
+## [1] "C"
+## [1] "BTC.USD"
+## [1] "UEC"
+## [1] "GM"
+## [1] "ET"
+\end{verbatim}
+
+\section{Portfolio Optimization}\label{portfolio-optimization}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mean\_vect}\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(stock\_return, mean)}
+\NormalTok{sd\_vect}\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(stock\_return, sd)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Compute mean and standard deviation vectors}
+\NormalTok{mean\_vect }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(stock\_return, mean)}
+\NormalTok{sd\_vect }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(stock\_return, sd)}
+
+\CommentTok{\# Plot mean vs. standard deviation}
+\FunctionTok{plot}\NormalTok{(mean\_vect, sd\_vect, }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Mean Return"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Standard Deviation"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Risk{-}Return Plot"}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(mean\_vect, sd\_vect, }\AttributeTok{labels =} \FunctionTok{colnames}\NormalTok{(stock\_return), }\AttributeTok{pos =} \DecValTok{4}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.8}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Final-Project_files/figure-latex/unnamed-chunk-41-1.pdf}}
+\#\# Markowitz mean variance problem
+
+We define the markowitz mean-variance problem as: \[
+\min_{w_t\in \mathcal{W_t}} w^T\Sigma_t w\\
+\text{s.t  } w^T\mu_t \geq \mu_{\min}\\
+\mathcal{W} :=\left\{w | w_i \geq 0, \sum^n_{i=1}w_i = 1  \right\}, \ i = 1,2,\dots, n
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{suppressWarnings}\NormalTok{(}\FunctionTok{library}\NormalTok{(CVXR, }\AttributeTok{warn.conflicts=}\ConstantTok{FALSE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mu\_sigma\_forecast\_extract }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{df =}\NormalTok{ stock\_return, }\AttributeTok{models\_list =}\NormalTok{ arma\_garch\_fits, }\AttributeTok{n.ahead =} \DecValTok{1}\NormalTok{) \{}
+  \CommentTok{\# Initialize empty data frames}
+\NormalTok{  forecast\_mu }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Date =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{character}\NormalTok{()), }\AttributeTok{Series =} \FunctionTok{character}\NormalTok{(), }\AttributeTok{Forecast\_Mu =} \FunctionTok{numeric}\NormalTok{())}
+\NormalTok{  forecast\_sigma }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Date =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{character}\NormalTok{()), }\AttributeTok{Series =} \FunctionTok{character}\NormalTok{(), }\AttributeTok{Forecast\_Sigma =} \FunctionTok{numeric}\NormalTok{())}
+  
+  \CommentTok{\# Loop through each model}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \FunctionTok{seq\_along}\NormalTok{(models\_list)) \{}
+\NormalTok{    model }\OtherTok{\textless{}{-}}\NormalTok{ models\_list[[i]]}
+\NormalTok{    series\_name }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(df)[i]}
+    
+    \CommentTok{\# Forecast 1{-}step ahead}
+\NormalTok{    forecast }\OtherTok{\textless{}{-}} \FunctionTok{ugarchforecast}\NormalTok{(model, }\AttributeTok{n.ahead =}\NormalTok{ n.ahead)}
+    
+    \CommentTok{\# Extract forecasted mean (mu) and sigma}
+\NormalTok{    mu\_forecast }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{fitted}\NormalTok{(forecast))}
+\NormalTok{    sigma\_forecast }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{sigma}\NormalTok{(forecast))}
+    
+    \CommentTok{\# Get the next date (assuming daily data)}
+\NormalTok{    last\_date }\OtherTok{\textless{}{-}} \FunctionTok{tail}\NormalTok{(}\FunctionTok{index}\NormalTok{(df[, i]), }\DecValTok{1}\NormalTok{)}
+\NormalTok{    forecast\_date }\OtherTok{\textless{}{-}}\NormalTok{ last\_date }\SpecialCharTok{+} \DecValTok{1}  \CommentTok{\# Adjust if not daily}
+    
+    \CommentTok{\# Store results}
+\NormalTok{    forecast\_mu }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(forecast\_mu, }\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Date =}\NormalTok{ forecast\_date,}
+      \AttributeTok{Series =}\NormalTok{ series\_name,}
+      \AttributeTok{Forecast\_Mu =}\NormalTok{ mu\_forecast}
+\NormalTok{    ))}
+    
+\NormalTok{    forecast\_sigma }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(forecast\_sigma, }\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Date =}\NormalTok{ forecast\_date,}
+      \AttributeTok{Series =}\NormalTok{ series\_name,}
+      \AttributeTok{Forecast\_Sigma =}\NormalTok{ sigma\_forecast}
+\NormalTok{    ))}
+\NormalTok{  \}}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{Forecast\_Mu =}\NormalTok{ forecast\_mu, }\AttributeTok{Forecast\_Sigma =}\NormalTok{ forecast\_sigma))}
+\NormalTok{\}}
+\NormalTok{mu\_sigma\_list }\OtherTok{=} \FunctionTok{mu\_sigma\_forecast\_extract}\NormalTok{()}
+\NormalTok{mu\_sigma\_list}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $Forecast_Mu
+##    Date  Series   Forecast_Mu
+## 1   501    AAPL  0.0023261150
+## 2   501    MSFT  0.0026463638
+## 3   501    META  0.0018181867
+## 4   501       V  0.0007682751
+## 5   501     JPM  0.0019072114
+## 6   501       C  0.0026042412
+## 7   501 BTC.USD  0.0022248110
+## 8   501     UEC  0.0018919004
+## 9   501      GM -0.0006481234
+## 10  501      ET  0.0033684257
+## 
+## $Forecast_Sigma
+##    Date  Series Forecast_Sigma
+## 1   501    AAPL    0.009078215
+## 2   501    MSFT    0.011630045
+## 3   501    META    0.018382229
+## 4   501       V    0.007831713
+## 5   501     JPM    0.008973440
+## 6   501       C    0.013404420
+## 7   501 BTC.USD    0.029034750
+## 8   501     UEC    0.032306527
+## 9   501      GM    0.022801244
+## 10  501      ET    0.008640254
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cond\_mu }\OtherTok{=}\NormalTok{ mu\_sigma\_list}\SpecialCharTok{$}\NormalTok{Forecast\_Mu}\SpecialCharTok{$}\NormalTok{Forecast\_Mu}
+\NormalTok{cond\_sigma }\OtherTok{=}\NormalTok{ mu\_sigma\_list}\SpecialCharTok{$}\NormalTok{Forecast\_Sigma}\SpecialCharTok{$}\NormalTok{Forecast\_Sigma}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(matrixcalc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: matrixcalc
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'matrixcalc'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:CVXR':
+## 
+##     vec
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:fBasics':
+## 
+##     vec, vech
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(CVXR)}
+\NormalTok{adjust\_cov\_matrix }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(return\_df, cond\_sigma) \{}
+  \CommentTok{\# Compute initial covariance matrix}
+\NormalTok{  cov\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{cov}\NormalTok{(return\_df)}
+  
+  \CommentTok{\# Replace diagonal with GARCH conditional variances}
+\NormalTok{  sigma\_now }\OtherTok{\textless{}{-}}\NormalTok{ cov\_matrix}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(sigma\_now)) \{}
+\NormalTok{    sigma\_now[i, i] }\OtherTok{\textless{}{-}}\NormalTok{ cond\_sigma[i]}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Check PSD status}
+\NormalTok{  eigenvalues }\OtherTok{\textless{}{-}} \FunctionTok{eigen}\NormalTok{(sigma\_now, }\AttributeTok{symmetric =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{only.values =} \ConstantTok{TRUE}\NormalTok{)}\SpecialCharTok{$}\NormalTok{values}
+\NormalTok{  check\_psd }\OtherTok{\textless{}{-}} \FunctionTok{all}\NormalTok{(eigenvalues }\SpecialCharTok{\textgreater{}=} \SpecialCharTok{{-}}\FloatTok{1e{-}10}\NormalTok{)}
+  
+  \CommentTok{\# If not PSD, find nearest PSD matrix}
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\NormalTok{check\_psd) \{}
+    \FunctionTok{message}\NormalTok{(}\StringTok{"Cov matrix is not PSD, approximating nearest PSD matrix..."}\NormalTok{)}
+\NormalTok{    m }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(sigma\_now)}
+\NormalTok{    X }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Variable}\NormalTok{(m, m, }\AttributeTok{symmetric =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{    objective }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Minimize}\NormalTok{(CVXR}\SpecialCharTok{::}\FunctionTok{sum\_squares}\NormalTok{(X }\SpecialCharTok{{-}}\NormalTok{ sigma\_now))}
+\NormalTok{    constraints }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(X }\SpecialCharTok{\%\textgreater{}\textgreater{}\%} \DecValTok{0}\NormalTok{)}
+\NormalTok{    problem }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Problem}\NormalTok{(objective, constraints)}
+\NormalTok{    result }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{solve}\NormalTok{(problem)}
+    
+\NormalTok{    sigma\_now }\OtherTok{\textless{}{-}}\NormalTok{ result}\SpecialCharTok{$}\FunctionTok{getValue}\NormalTok{(X)}
+    \FunctionTok{message}\NormalTok{(}\StringTok{"PSD adjustment complete. "}\NormalTok{, }
+            \StringTok{"Min eigenvalue: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(}\FunctionTok{min}\NormalTok{(}\FunctionTok{eigen}\NormalTok{(sigma\_now)}\SpecialCharTok{$}\NormalTok{values), }\DecValTok{4}\NormalTok{))}
+  
+    
+\NormalTok{    \}}
+\NormalTok{  eigenvalues }\OtherTok{\textless{}{-}} \FunctionTok{eigen}\NormalTok{(sigma\_now, }\AttributeTok{symmetric =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{only.values =} \ConstantTok{TRUE}\NormalTok{)}\SpecialCharTok{$}\NormalTok{values}
+\NormalTok{  check\_psd }\OtherTok{\textless{}{-}} \FunctionTok{all}\NormalTok{(eigenvalues }\SpecialCharTok{\textgreater{}=} \SpecialCharTok{{-}}\FloatTok{1e{-}10}\NormalTok{)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\NormalTok{check\_psd)\{}
+\NormalTok{    decomp }\OtherTok{=} \FunctionTok{eigen}\NormalTok{(sigma\_now)}
+\NormalTok{    V }\OtherTok{=}\NormalTok{ decomp}\SpecialCharTok{$}\NormalTok{values}
+\NormalTok{    U }\OtherTok{=}\NormalTok{ decomp}\SpecialCharTok{$}\NormalTok{vectors}
+    
+\NormalTok{    V }\OtherTok{=} \FunctionTok{ifelse}\NormalTok{(V}\SpecialCharTok{\textless{}}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, V)}
+\NormalTok{    sigma\_now }\OtherTok{=}\NormalTok{ U}\SpecialCharTok{\%*\%}\FunctionTok{diag}\NormalTok{(V)}\SpecialCharTok{\%*\%}\NormalTok{Matrix}\SpecialCharTok{::}\FunctionTok{solve}\NormalTok{(U)}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sigma\_now)}
+\NormalTok{\}}
+\NormalTok{mv\_optimization }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(sigma\_now, cond\_mu, }
+                           \AttributeTok{min\_return =} \FloatTok{0.05}\NormalTok{, }
+                           \AttributeTok{solver =} \StringTok{"SCS"}\NormalTok{) \{}
+  \CommentTok{\# Input validation}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(cond\_mu) }\SpecialCharTok{!=} \FunctionTok{nrow}\NormalTok{(sigma\_now)) \{}
+    \FunctionTok{stop}\NormalTok{(}\StringTok{"cond\_mu length doesn\textquotesingle{}t match covariance matrix dimension"}\NormalTok{)}
+\NormalTok{  \}}
+  
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(cond\_mu)}
+\NormalTok{  w }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Variable}\NormalTok{(n)}
+  
+  \CommentTok{\# Portfolio optimization problem}
+\NormalTok{  objective }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Minimize}\NormalTok{(CVXR}\SpecialCharTok{::}\FunctionTok{quad\_form}\NormalTok{(w, sigma\_now))}
+\NormalTok{  constraints }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+    \FunctionTok{t}\NormalTok{(cond\_mu) }\SpecialCharTok{\%*\%}\NormalTok{ w }\SpecialCharTok{\textgreater{}=}\NormalTok{ min\_return,}
+    \FunctionTok{sum}\NormalTok{(w) }\SpecialCharTok{==} \DecValTok{1}\NormalTok{,}
+\NormalTok{    w }\SpecialCharTok{\textgreater{}=} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}
+\NormalTok{    w}\SpecialCharTok{\textless{}=}\DecValTok{1}
+\NormalTok{  )}
+  
+\NormalTok{  problem }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{Problem}\NormalTok{(objective, constraints)}
+  
+  \CommentTok{\# Solve and return results}
+\NormalTok{  result }\OtherTok{\textless{}{-}}\NormalTok{ CVXR}\SpecialCharTok{::}\FunctionTok{solve}\NormalTok{(problem, }\AttributeTok{solver =}\NormalTok{ solver, }\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  \ControlFlowTok{if}\NormalTok{ (result}\SpecialCharTok{$}\NormalTok{status }\SpecialCharTok{!=} \StringTok{"optimal"}\NormalTok{) \{}
+    \FunctionTok{warning}\NormalTok{(}\StringTok{"Optimization failed with status: "}\NormalTok{, result}\SpecialCharTok{$}\NormalTok{status)}
+\NormalTok{  \}}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}
+    \AttributeTok{weights =} \FunctionTok{as.numeric}\NormalTok{(result}\SpecialCharTok{$}\FunctionTok{getValue}\NormalTok{(w)),}
+    \AttributeTok{portfolio\_variance =}\NormalTok{ result}\SpecialCharTok{$}\NormalTok{value,}
+    \AttributeTok{status =}\NormalTok{ result}\SpecialCharTok{$}\NormalTok{status}
+\NormalTok{  ))}
+\NormalTok{\}}\CommentTok{\# First adjust covariance matrix}
+\NormalTok{adjusted\_cov }\OtherTok{\textless{}{-}} \FunctionTok{adjust\_cov\_matrix}\NormalTok{(}
+  \AttributeTok{return\_df =}\NormalTok{ stock\_return,}
+  \AttributeTok{cond\_sigma =}\NormalTok{ mu\_sigma\_list}\SpecialCharTok{$}\NormalTok{Forecast\_Sigma}\SpecialCharTok{$}\NormalTok{Forecast\_Sigma}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Cov matrix is not PSD, approximating nearest PSD matrix...
+\end{verbatim}
+
+\begin{verbatim}
+## PSD adjustment complete. Min eigenvalue: 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Then run optimization}
+\NormalTok{optim\_result }\OtherTok{\textless{}{-}} \FunctionTok{mv\_optimization}\NormalTok{(}
+  \AttributeTok{sigma\_now =}\NormalTok{ adjusted\_cov,}
+  \AttributeTok{cond\_mu =}\NormalTok{ mu\_sigma\_list}\SpecialCharTok{$}\NormalTok{Forecast\_Mu}\SpecialCharTok{$}\NormalTok{Forecast\_Mu,}
+  \AttributeTok{min\_return =} \DecValTok{0}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ------------------------------------------------------------------
+##         SCS v3.2.7 - Splitting Conic Solver
+##  (c) Brendan O'Donoghue, Stanford University, 2012
+## ------------------------------------------------------------------
+## problem:  variables n: 11, constraints m: 29
+## cones:     z: primal zero / dual free vars: 1
+##    l: linear vars: 21
+##    q: soc vars: 7, qsize: 1
+## settings: eps_abs: 1.0e-04, eps_rel: 1.0e-04, eps_infeas: 1.0e-07
+##    alpha: 1.50, scale: 1.00e-01, adaptive_scale: 1
+##    max_iters: 2500, normalize: 1, rho_x: 1.00e-06
+## lin-sys:  sparse-direct-amd-qdldl
+##    nnz(A): 92, nnz(P): 0
+## ------------------------------------------------------------------
+##  iter | pri res | dua res |   gap   |   obj   |  scale  | time (s)
+## ------------------------------------------------------------------
+##      0| 1.16e+00  1.28e-01  1.29e-01  6.43e-02  1.00e-01  8.37e-04 
+##    200| 1.84e-04  6.45e-06  7.74e-06  5.32e-06  2.40e-03  9.99e-04 
+## ------------------------------------------------------------------
+## status:  solved
+## timings: total: 1.01e-03s = setup: 4.59e-04s + solve: 5.46e-04s
+##   lin-sys: 8.99e-05s, cones: 1.44e-05s, accel: 0.00e+00s
+## ------------------------------------------------------------------
+## objective = 0.000005
+## ------------------------------------------------------------------
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Print results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Optimal weights:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(optim\_result}\SpecialCharTok{$}\NormalTok{weights, }\DecValTok{5}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Optimal weights: 0.31509"  "Optimal weights: 0.35151" 
+##  [3] "Optimal weights: -0.48088" "Optimal weights: 0.62093" 
+##  [5] "Optimal weights: 0.07947"  "Optimal weights: -0.47264"
+##  [7] "Optimal weights: -0.04772" "Optimal weights: -0.29638"
+##  [9] "Optimal weights: -0.0694"  "Optimal weights: 1"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Portfolio variance:"}\NormalTok{, optim\_result}\SpecialCharTok{$}\NormalTok{portfolio\_variance))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Portfolio variance: 1.45224403116471e-06"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:} \FunctionTok{length}\NormalTok{(optim\_result}\SpecialCharTok{$}\NormalTok{weights))\{}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(stock\_return)[i],}\StringTok{" "}\NormalTok{, }\FunctionTok{round}\NormalTok{(optim\_result}\SpecialCharTok{$}\NormalTok{weights[i], }\DecValTok{5}\NormalTok{)))}
+\NormalTok{  \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "AAPL 0.31509"
+## [1] "MSFT 0.35151"
+## [1] "META -0.48088"
+## [1] "V 0.62093"
+## [1] "JPM 0.07947"
+## [1] "C -0.47264"
+## [1] "BTC.USD -0.04772"
+## [1] "UEC -0.29638"
+## [1] "GM -0.0694"
+## [1] "ET 1"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\FunctionTok{t}\NormalTok{(cond\_mu)}\SpecialCharTok{\%*\%}\NormalTok{optim\_result}\SpecialCharTok{$}\NormalTok{weights)}\SpecialCharTok{*}\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           [,1]
+## [1,] 0.2933119
+\end{verbatim}
+
+\subsubsection{compare with unconditional
+mean}\label{compare-with-unconditional-mean}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Then run optimization}
+\NormalTok{optim\_result\_wo\_cond }\OtherTok{\textless{}{-}} \FunctionTok{mv\_optimization}\NormalTok{(}
+  \AttributeTok{sigma\_now =} \FunctionTok{cov}\NormalTok{(stock\_return),}
+  \AttributeTok{cond\_mu =} \FunctionTok{sapply}\NormalTok{(stock\_return, mean),}
+  \AttributeTok{min\_return =} \DecValTok{0}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ------------------------------------------------------------------
+##         SCS v3.2.7 - Splitting Conic Solver
+##  (c) Brendan O'Donoghue, Stanford University, 2012
+## ------------------------------------------------------------------
+## problem:  variables n: 11, constraints m: 34
+## cones:     z: primal zero / dual free vars: 1
+##    l: linear vars: 21
+##    q: soc vars: 12, qsize: 1
+## settings: eps_abs: 1.0e-04, eps_rel: 1.0e-04, eps_infeas: 1.0e-07
+##    alpha: 1.50, scale: 1.00e-01, adaptive_scale: 1
+##    max_iters: 2500, normalize: 1, rho_x: 1.00e-06
+## lin-sys:  sparse-direct-amd-qdldl
+##    nnz(A): 142, nnz(P): 0
+## ------------------------------------------------------------------
+##  iter | pri res | dua res |   gap   |   obj   |  scale  | time (s)
+## ------------------------------------------------------------------
+##      0| 1.15e+00  9.80e-02  9.89e-02  4.93e-02  1.00e-01  8.44e-04 
+##    150| 1.38e-04  5.21e-06  2.71e-06  1.44e-04  3.04e-03  1.04e-03 
+## ------------------------------------------------------------------
+## status:  solved
+## timings: total: 1.04e-03s = setup: 4.63e-04s + solve: 5.78e-04s
+##   lin-sys: 1.24e-04s, cones: 1.35e-05s, accel: 0.00e+00s
+## ------------------------------------------------------------------
+## objective = 0.000144
+## ------------------------------------------------------------------
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Print results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Optimal weights:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(optim\_result\_wo\_cond}\SpecialCharTok{$}\NormalTok{weights, }\DecValTok{5}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Optimal weights: 0.07964"  "Optimal weights: 0.15754" 
+##  [3] "Optimal weights: -0.03962" "Optimal weights: 0.3107"  
+##  [5] "Optimal weights: 0.27325"  "Optimal weights: 0.01889" 
+##  [7] "Optimal weights: -0.01277" "Optimal weights: -0.06306"
+##  [9] "Optimal weights: -0.0993"  "Optimal weights: 0.37474"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Portfolio variance:"}\NormalTok{, optim\_result\_wo\_cond}\SpecialCharTok{$}\NormalTok{portfolio\_variance))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Portfolio variance: 0.000142532188623033"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(stock\_return, mean))}\SpecialCharTok{\%*\%}\NormalTok{optim\_result\_wo\_cond}\SpecialCharTok{$}\NormalTok{weights)}\SpecialCharTok{*}\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            [,1]
+## [1,] 0.07260244
+\end{verbatim}
+
+\subsection{Risk Averse Optimization
+Model}\label{risk-averse-optimization-model}
+
+We consider Risk-Averse problem defined as:
+
+\[
+\min_{x \in \mathcal{X}}\mathbb{E}[Z_x] + c\mathbb{D}[Z_x]
+\]
+
+Where: - \(c \geq 0\) plays the role of the price of risk -
+\(\mathbb{E}\) is the expected value -
+\(\mathcal{X} \subseteq \mathbb{R}^n\) is assumed to be closed and
+convex - \(\mathbb{D}: \mathcal{Z} \rightarrow \mathbb{R}\) is a
+dispersion measure
+
+\subsubsection{CVaR as a dispersion
+measure}\label{cvar-as-a-dispersion-measure}
+
+\[
+  \text{CVaR}_\alpha(w) = \min_{\zeta \in \mathbb{R}} \left[ \zeta + \frac{1}{(1 - \alpha)T} \sum_{i=1}^T \max\left\{ L_i(w) - \zeta, 0 \right\} \right]
+\]
+
+\subsubsection{Optimization Problem}\label{optimization-problem}
+
+\[
+\begin{aligned}
+\min_{w, \zeta} \quad & \zeta + \frac{1}{(1 - \alpha)T} \sum_{i=1}^T u_i \\
+\text{s.t.} \quad & u_i \ge -r_i^\top w - \zeta,\quad u_i \ge 0 \\
+& \mathbf{1}^\top w = 1,\quad w \ge 0 \\
+\end{aligned}
+\]
+
+Where:
+
+\begin{itemize}
+\tightlist
+\item
+  \(\zeta \in \mathbb{R}\): VaR auxiliary variable
+\item
+  \(u_i \in \mathbb{R}_{+}\): CVaR hinge loss per scenario
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(CVXR)}
+
+\NormalTok{cvar\_optimization }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(return\_mat, }\AttributeTok{alpha =} \FloatTok{0.95}\NormalTok{) \{}
+\NormalTok{  P }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(return\_mat)}
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{ncol}\NormalTok{(return\_mat)}
+
+\NormalTok{  w }\OtherTok{\textless{}{-}} \FunctionTok{Variable}\NormalTok{(n)}
+\NormalTok{  zeta }\OtherTok{\textless{}{-}} \FunctionTok{Variable}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{  u }\OtherTok{\textless{}{-}} \FunctionTok{Variable}\NormalTok{(P)}
+
+\NormalTok{  loss\_matrix }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{return\_mat  }\CommentTok{\# L\_i(w) = {-}r\_i\^{}T w}
+\NormalTok{  losses }\OtherTok{\textless{}{-}}\NormalTok{ loss\_matrix }\SpecialCharTok{\%*\%}\NormalTok{ w}
+
+  
+  \CommentTok{\# Objective: minimize CVaR}
+\NormalTok{  objective }\OtherTok{\textless{}{-}} \FunctionTok{Minimize}\NormalTok{(zeta }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{/}\NormalTok{ ((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ P)) }\SpecialCharTok{*} \FunctionTok{sum}\NormalTok{(u))}
+
+  \CommentTok{\# Constraints}
+\NormalTok{  constraints }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+\NormalTok{    u }\SpecialCharTok{\textgreater{}=}\NormalTok{ losses }\SpecialCharTok{{-}}\NormalTok{ zeta,}
+\NormalTok{    u }\SpecialCharTok{\textgreater{}=} \DecValTok{0}\NormalTok{,}
+    \FunctionTok{sum}\NormalTok{(w) }\SpecialCharTok{==} \DecValTok{1}\NormalTok{,}
+\NormalTok{    w }\SpecialCharTok{\textgreater{}=} \DecValTok{0}
+\NormalTok{  )}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{is\_dcp}\NormalTok{(objective))}
+\NormalTok{  problem }\OtherTok{\textless{}{-}} \FunctionTok{Problem}\NormalTok{(objective, constraints)}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{is\_dcp}\NormalTok{(problem))}
+
+\NormalTok{  result }\OtherTok{\textless{}{-}} \FunctionTok{solve}\NormalTok{(problem, }\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{solver =} \StringTok{"SCS"}\NormalTok{)}
+
+  \FunctionTok{list}\NormalTok{(}
+    \AttributeTok{weights =} \FunctionTok{round}\NormalTok{(result}\SpecialCharTok{$}\FunctionTok{getValue}\NormalTok{(w), }\DecValTok{4}\NormalTok{),}
+    \AttributeTok{status =}\NormalTok{ result}\SpecialCharTok{$}\NormalTok{status,}
+    \AttributeTok{cvar =}\NormalTok{ result}\SpecialCharTok{$}\NormalTok{value}
+\NormalTok{  )}
+\NormalTok{\}}
+\NormalTok{simulate\_t\_returns }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(cond\_mu, cond\_sigma, }\AttributeTok{df =} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{), }\AttributeTok{n\_sim =} \DecValTok{500}\NormalTok{) \{}
+\NormalTok{  m }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(cond\_mu)}
+\NormalTok{  sims }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ n\_sim, }\AttributeTok{ncol =}\NormalTok{ m)}
+  
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{m) \{}
+    \CommentTok{\# Simulate standardized t{-}distributed errors, then scale and shift}
+\NormalTok{    z }\OtherTok{\textless{}{-}} \FunctionTok{rt}\NormalTok{(n\_sim, }\AttributeTok{df =}\NormalTok{ df[i])}
+\NormalTok{    sims[, i] }\OtherTok{\textless{}{-}}\NormalTok{ cond\_mu[i] }\SpecialCharTok{+}\NormalTok{ cond\_sigma[i] }\SpecialCharTok{*}\NormalTok{ z}
+\NormalTok{  \}}
+  
+  
+  \FunctionTok{colnames}\NormalTok{(sims) }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Asset\_"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\NormalTok{m)}
+  \FunctionTok{return}\NormalTok{(sims)}
+\NormalTok{\}}
+\NormalTok{simult\_t }\OtherTok{=} \FunctionTok{simulate\_t\_returns}\NormalTok{(}\AttributeTok{cond\_mu =}\NormalTok{ cond\_mu, }\AttributeTok{cond\_sigma =}\NormalTok{ cond\_sigma)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cvar\_optim}\OtherTok{\textless{}{-}}\FunctionTok{cvar\_optimization}\NormalTok{(}\AttributeTok{return\_mat =}\NormalTok{ simult\_t)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+## [1] TRUE
+## ------------------------------------------------------------------
+##         SCS v3.2.7 - Splitting Conic Solver
+##  (c) Brendan O'Donoghue, Stanford University, 2012
+## ------------------------------------------------------------------
+## problem:  variables n: 511, constraints m: 1011
+## cones:     z: primal zero / dual free vars: 1
+##    l: linear vars: 1010
+## settings: eps_abs: 1.0e-04, eps_rel: 1.0e-04, eps_infeas: 1.0e-07
+##    alpha: 1.50, scale: 1.00e-01, adaptive_scale: 1
+##    max_iters: 2500, normalize: 1, rho_x: 1.00e-06
+## lin-sys:  sparse-direct-amd-qdldl
+##    nnz(A): 6520, nnz(P): 0
+## ------------------------------------------------------------------
+##  iter | pri res | dua res |   gap   |   obj   |  scale  | time (s)
+## ------------------------------------------------------------------
+##      0| 1.43e+00  1.16e+00  1.48e+01 -7.09e+00  1.00e-01  1.66e-03 
+##    250| 1.67e-01  6.96e-03  1.11e-04  1.04e-01  9.83e-04  1.03e-02 
+##    500| 4.54e-02  6.91e-04  9.27e-05  1.02e-01  9.83e-04  1.87e-02 
+##    750| 1.67e-02  9.37e-04  2.54e-05  1.02e-01  9.83e-04  2.71e-02 
+##   1000| 1.88e-02  5.51e-04  3.75e-05  1.04e-01  9.83e-04  3.54e-02 
+##   1025| 2.03e-02  1.63e-04  2.97e-05  1.04e-01  9.83e-04  3.63e-02 
+## ------------------------------------------------------------------
+## status:  solved
+## timings: total: 3.63e-02s = setup: 1.20e-03s + solve: 3.51e-02s
+##   lin-sys: 2.82e-02s, cones: 1.34e-03s, accel: 0.00e+00s
+## ------------------------------------------------------------------
+## objective = 0.103760
+## ------------------------------------------------------------------
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:} \FunctionTok{length}\NormalTok{(optim\_result}\SpecialCharTok{$}\NormalTok{weights))\{}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(stock\_return)[i],}\StringTok{" "}\NormalTok{, }\FunctionTok{round}\NormalTok{(cvar\_optim}\SpecialCharTok{$}\NormalTok{weights[i], }\DecValTok{5}\NormalTok{)))}
+\NormalTok{  \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "AAPL -0.0018"
+## [1] "MSFT 0.0125"
+## [1] "META 0.0046"
+## [1] "V 0.1828"
+## [1] "JPM 0.01"
+## [1] "C 0.0112"
+## [1] "BTC.USD 0.0047"
+## [1] "UEC 0.0257"
+## [1] "GM 0.002"
+## [1] "ET 0.7484"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\FunctionTok{t}\NormalTok{(cond\_mu)}\SpecialCharTok{\%*\%}\NormalTok{cvar\_optim}\SpecialCharTok{$}\NormalTok{weights)}\SpecialCharTok{*}\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           [,1]
+## [1,] 0.2804648
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simult\_t\_wo\_cond }\OtherTok{=} \FunctionTok{simulate\_t\_returns}\NormalTok{(}\AttributeTok{cond\_mu =} \FunctionTok{sapply}\NormalTok{(stock\_return, mean), }\AttributeTok{cond\_sigma =} \FunctionTok{sapply}\NormalTok{(stock\_return, sd))}
+
+\NormalTok{cvar\_optim\_wo\_cond}\OtherTok{\textless{}{-}}\FunctionTok{cvar\_optimization}\NormalTok{(}\AttributeTok{return\_mat =}\NormalTok{ simult\_t\_wo\_cond)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+## [1] TRUE
+## ------------------------------------------------------------------
+##         SCS v3.2.7 - Splitting Conic Solver
+##  (c) Brendan O'Donoghue, Stanford University, 2012
+## ------------------------------------------------------------------
+## problem:  variables n: 511, constraints m: 1011
+## cones:     z: primal zero / dual free vars: 1
+##    l: linear vars: 1010
+## settings: eps_abs: 1.0e-04, eps_rel: 1.0e-04, eps_infeas: 1.0e-07
+##    alpha: 1.50, scale: 1.00e-01, adaptive_scale: 1
+##    max_iters: 2500, normalize: 1, rho_x: 1.00e-06
+## lin-sys:  sparse-direct-amd-qdldl
+##    nnz(A): 6520, nnz(P): 0
+## ------------------------------------------------------------------
+##  iter | pri res | dua res |   gap   |   obj   |  scale  | time (s)
+## ------------------------------------------------------------------
+##      0| 1.10e+00  1.28e+00  1.48e+01 -7.11e+00  1.00e-01  1.67e-03 
+##    250| 1.39e-03  4.34e-04  7.32e-05  1.92e-01  1.00e-01  1.00e-02 
+##    500| 8.55e-04  8.29e-04  6.39e-05  1.92e-01  1.00e-01  1.84e-02 
+##    750| 4.18e-04  2.73e-04  1.67e-05  1.92e-01  1.00e-01  2.67e-02 
+##   1000| 2.87e-04  1.80e-04  1.38e-05  1.92e-01  1.00e-01  3.50e-02 
+##   1075| 1.24e-04  1.49e-04  1.73e-06  1.92e-01  1.00e-01  3.75e-02 
+## ------------------------------------------------------------------
+## status:  solved
+## timings: total: 3.75e-02s = setup: 1.22e-03s + solve: 3.63e-02s
+##   lin-sys: 2.95e-02s, cones: 1.30e-03s, accel: 0.00e+00s
+## ------------------------------------------------------------------
+## objective = 0.192069
+## ------------------------------------------------------------------
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:} \FunctionTok{length}\NormalTok{(optim\_result}\SpecialCharTok{$}\NormalTok{weights))\{}
+  \FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(stock\_return)[i],}\StringTok{" "}\NormalTok{, }\FunctionTok{round}\NormalTok{(cvar\_optim\_wo\_cond}\SpecialCharTok{$}\NormalTok{weights[i], }\DecValTok{5}\NormalTok{)))}
+\NormalTok{  \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "AAPL 0.0027"
+## [1] "MSFT 0.3279"
+## [1] "META 0.0893"
+## [1] "V 0.2663"
+## [1] "JPM 0.0023"
+## [1] "C 0.0585"
+## [1] "BTC.USD 0.0037"
+## [1] "UEC 0"
+## [1] "GM 0.1484"
+## [1] "ET 0.101"
+\end{verbatim}
+
+\subsubsection{copmare with unconditional
+mean}\label{copmare-with-unconditional-mean}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(stock\_return, mean))}\SpecialCharTok{\%*\%}\NormalTok{cvar\_optim}\SpecialCharTok{$}\NormalTok{weights}\SpecialCharTok{*}\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           [,1]
+## [1,] 0.1039523
+\end{verbatim}
+
+\subsubsection{Comparison(variance as a dispersion
+measure)}\label{comparisonvariance-as-a-dispersion-measure}
+
+\subsection{Implement a rolling online learning algorithm for the
+optimization}\label{implement-a-rolling-online-learning-algorithm-for-the-optimization}
+
+\end{document}

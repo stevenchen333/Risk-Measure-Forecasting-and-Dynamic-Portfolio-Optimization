@@ -5,6 +5,10 @@ date: "`r Sys.Date()`"
 output:
   pdf_document: default
   html_document: default
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{amsthm}
+  - \usepackage{amsfonts}
 ---
 # Abstract
 
@@ -66,6 +70,28 @@ For simplicity, we first consider one stock. We will generalize further into mul
 
 
 ## Basic EDA
+```{r}
+basic_eda<- function(series,cutoff = NULL,lag, x_1 = NULL, y_1 = NULL, x_2 = NULL, y_2 = NULL){
+  layout_matrix <- matrix(c(1, 1,
+                            2, 3),
+                          nrow = 2, byrow = TRUE)
+
+  layout(layout_matrix)
+
+  ts.plot(series)
+  if (is.null(x_1) == FALSE & is.null(y_1) == FALSE& is.null(x_2) == FALSE& is.null(y_2) == FALSE & is.null(cutoff) == FALSE){
+    abline(v = cutoff, col = "red", lty = 2)
+    text(x_1,y_1, "training data")
+    text(x_2,y_2, "test data")}
+
+
+  acf(series, lag);pacf(series,lag)
+
+
+  par(mfrow = c(1,1))
+}
+
+```
 
 ```{r, fig.height = 6}
 basic_eda(stock_df[,1], lag = 52, cutoff = which(
@@ -77,6 +103,36 @@ basic_eda(stock_df[,1], lag = 52, cutoff = which(
 
 
 ### using log_returns
+```{r}
+aapl_train<-stock_df_train[,1]
+```
+
+```{r}
+
+calculate_returns <- function(stock_df, type = c("log", "simple")) {
+  type <- match.arg(type)
+
+  # Extract dates and prices
+  dates <- zoo::index(stock_df)
+  prices <- stock_df
+
+  # Compute returns
+  if (type == "log" ) {
+    returns <- diff(log(as.matrix(prices)))
+  } else {
+    returns <- diff(as.matrix(prices)) / head(as.matrix(prices), -1)
+  }
+
+  # Adjust dates to match the return periods
+  return_dates <- dates[-1]
+
+  # Combine into a new data frame
+  return_df <- data.frame(returns)
+  colnames(return_df) <- colnames(stock_df)
+  return(return_df)
+}
+```
+
 ```{r}
 
 
@@ -90,11 +146,7 @@ ts.plot(aapl_return_train)
 ```{r}
 hist((aapl_return_train$AAPL), breaks = 30)
 ```
-```{r}
-require(zoo)
-plot(stl(ts(aapl_return_train$AAPL, frequency = 252), s.window = "periodic"))
 
-```
 
 ```{r}
 if (!requireNamespace("fBasics", quietly = TRUE)) install.packages("fBasics")
@@ -110,32 +162,14 @@ print(basic_stats[c("Mean", "Variance", "Skewness", "Kurtosis"), ])
 require(aTSA)
 ```
 ```{r}
-adf.test(as.matrix(aapl_return_train), nlag = 12)
+stationarity_tests(aapl_return_train)
 ```
 
-The returns is stationary
-
-
-```{r}
-kpss.test(as.matrix(aapl_return_train))
-```
-
-
-The returns is stationary
 
 
 ### ARMA-GARCH modelling
-```{r, warning=FALSE, fig.height=7}
-par(mfrow = c(2,1))
-
-acf(aapl_return_train, lag = 52);pacf(aapl_return_train, lag = 52)
-```
-
-```{r, warning=FALSE, fig.height=7}
-par(mfrow = c(2,1))
-
-acf(ts(aapl_return_train)^2, lag = 52);pacf(ts(aapl_return_train)^2, lag = 52)
-
+```{r, warning=FALSE, fig.height=7, fig.width=7}
+acf_pacf_ret(aapl_return_train, lag = 52)
 ```
 
 
@@ -149,22 +183,7 @@ acf(ts(aapl_return_train)^2, lag = 52);pacf(ts(aapl_return_train)^2, lag = 52)
 ```{r, fig.height=6, fig.width = 6}
 library(FinTS)
 
-archtest_lags <- list()
-
-for (i in 1:12) {
-  archtest_lags[[i]] <- ArchTest(arima(aapl_return_train, order = c(0,0,0), include.mean = FALSE)$residuals, lags = i)
-}
-
-# Extract lags, statistics, and p-values
-arch_df <- data.frame(
-  Lag = 1:12,
-  Statistic = sapply(archtest_lags, function(x) x$statistic),
-  P_Value = sapply(archtest_lags, function(x) round(x$p.value, 4))
-)
-
-# View the result
-print(arch_df)
-
+  arch_test(aapl_return_train)
 ```
 Indicating we need GARCH model
 
@@ -179,7 +198,7 @@ library(rugarch)
 
 ```{r}
 spec <- ugarchspec(
-  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+  variance.model = list(model = "sGARCH", garchOrder = c(0, 1)),
   mean.model = list(armaOrder = c(0, 0), include.mean = TRUE),
   distribution.model = "norm"
 )
@@ -194,59 +213,60 @@ fit_aapl_train
 ```
 We will find ARMA order of Garch 1-1
 ```{r}
-
-aapl_models = list()
-info_crit_aapl_train =list()
-i=1
-for (p in 0:4){
-  for (q in 0:4){
-        spec <- ugarchspec(
-      variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
-      mean.model = list(armaOrder = c(p, q), include.mean = TRUE),
-      distribution.model = "norm")
-        
-        fit<-ugarchfit(spec,aapl_return_train)
-        aapl_models[[paste0("ARMA ",p, ",", q)]]<-fit
-        info_crit_aapl_train[[paste0("ARMA ",p, ",", q)]]<-infocriteria(fit)
-        i = i+1  
-  }
-}
-
-
+arma_garch_ic_plot(aapl_return_train)
 ```
 
+
 ```{r}
-# Assuming your list is named aic_list
-ic_df_aapl_train <- do.call(rbind, lapply(names(info_crit_aapl_train), function(name) {
-  data.frame(Model = name, t(as.data.frame(info_crit_aapl_train[[name]])))
-}))
+library(rugarch)
 
-rownames(ic_df_aapl_train)<-ic_df_aapl_train$Model
 
-# View result
-round(ic_df_aapl_train[,-1],3)
 
 ```
 ```{r}
-library(ggplot2)
-library(tidyr)
-aic_long <- pivot_longer(ic_df_aapl_train, cols = -Model, names_to = "Criterion", values_to = "Value")
-ggplot(aic_long, aes(x = Model, y = Value, color = Criterion, group = Criterion)) +
-  geom_line(size = 1) +
-  geom_point(size = 2) +
-  theme_minimal() +
-  labs(title = "Information Criteria for ARMA Models",
-       x = "Model",
-       y = "Criterion Value") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
+# # Compute mean of each metric for every model
+# cv_output<-arma_garch_cv(aapl_return_train$AAPL)
+# 
+# cv_summary <- do.call(rbind, lapply(names(cv_output$results), function(name) {
+#   metrics <- cv_output$results[[name]]
+#   data.frame(
+#     Model = name,
+#     MSE = mean(metrics$MSE, na.rm = TRUE),
+#     MAE = mean(metrics$MAE, na.rm = TRUE),
+#     NegLogLik = mean(metrics$NegLogLik, na.rm = TRUE),
+#     AIC = mean(metrics$AIC, na.rm = TRUE),
+#     BIC = mean(metrics$BIC, na.rm = TRUE)
+#   )
+# }))
+# library(ggplot2)
+# library(tidyr)
+# 
+# # Ensure models are ordered as factors (helps with plotting)
+# cv_summary$Model <- factor(cv_summary$Model, levels = unique(cv_summary$Model))
+# 
+# # Convert to long format
+# cv_long <- pivot_longer(cv_summary, cols = -Model, names_to = "Metric", values_to = "Value")
+# 
+# # Plot AIC and BIC
+# ggplot(cv_long[cv_long$Metric %in% c("AIC", "BIC"), ], 
+#        aes(x = Model, y = Value, group = Metric, color = Metric)) +
+#   geom_line(size = 1) +
+#   geom_point(size = 2) +
+#   labs(title = "Cross-Validated AIC and BIC for ARMA-GARCH Models",
+#        x = "Model", y = "Average Value") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Our final model is (3,0,3)(1,1)
+
+
+
+
+Our final model is IGARCH(3,0,3)(0,1)
 
 ```{r}
 spec <- ugarchspec(
-  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+  variance.model = list(model = "sGARCH", garchOrder = c(0, 1)),
   mean.model = list(armaOrder = c(3, 3), include.mean = TRUE),
   distribution.model = "norm"
 )
@@ -267,7 +287,1358 @@ plot(fit_aapl_train, which = "all")
 
 
 ```{r}
-plot(sigma(fit_aapl_train))
+ugarchforecast(fitORspec = fit_aapl_train, data = stock_df_test[,1])
 ```
+```{r}
+aapl_forecast<-ugarchforecast(fitORspec = fit_aapl_train, data = stock_df_test[,1])
+```
+
+
+## Risk Averse optimizaiton
+
+```{r}
+calculate_garch_var_cvar <- function(garch_forecast, confidence_level = 0.95, distribution = "norm") {
+  
+  alpha <- 1 - confidence_level
+  
+  # Extract GARCH forecasts
+  means <- as.numeric(garch_forecast@forecast$seriesFor)  # Conditional mean 
+  sigmas <- as.numeric(garch_forecast@forecast$sigmaFor)  # Conditional volatility 
+  
+  # Calculate VaR and CVaR for each period
+  if (distribution == "norm") {
+    # Gaussian innovation assumption
+    var <- means + sigmas * qnorm(alpha)
+    cvar <- means - sigmas * (dnorm(qnorm(alpha)) / alpha)
+  } 
+  else if (distribution == "std") {
+    # Student's t-distribution (adjust for degrees of freedom if needed)
+    df <- garch_forecast@model$pars["shape", 1]  # Degrees of freedom if using t-GARCH
+    var <- means + sigmas * qt(alpha, df = df)
+    cvar <- means - sigmas * (dt(qt(alpha, df = df), df = df) / alpha) * ((df + qt(alpha, df = df)^2) / (df - 1))
+
+  }
+  
+  return(list(
+    Period_VaR = var,
+    Period_CVaR = cvar,
+    Average_VaR = mean(var),
+    Average_CVaR = mean(cvar),
+    Worst_VaR = min(var),
+    Worst_CVaR = min(cvar)
+  ))
+}
+
+
+results <- calculate_garch_var_cvar(aapl_forecast)
+print(results)
+
+```
+
+
+
+
+# Modelling 10 stocks
+
+## ARMA-GARCH model selection
+
+```{r}
+head(stock_df_train)
+```
+
+
+
+```{r}
+head(stock_df_test)
+
+```
+```{r}
+# log returns
+
+
+calculate_returns <- function(stock_df, type = c("log", "simple")) {
+  type <- match.arg(type)
+
+  # Extract dates and prices
+  dates <- index(stock_df)
+  prices <- stock_df
+
+  # Compute returns
+  if (type == "log" ) {
+    returns <- diff(log(as.matrix(prices)))
+  } else {
+    returns <- diff(as.matrix(prices)) / head(as.matrix(prices), -1)
+  }
+
+  # Adjust dates to match the return periods
+  return_dates <- dates[-1]
+
+  # Combine into a new data frame
+  return_df <- data.frame(returns)
+  colnames(return_df) <- colnames(stock_df)
+  return(return_df)
+}
+
+
+stock_return<-calculate_returns(stock_df_train, type = "log")
+```
+
+
+```{r}
+# for (i in 1:ncol(stock_return)){
+#   stationarity_tests(stock_return[,i])
+# }
+```
+
+```{r}
+#install.packages("corrplot")
+library(corrplot)
+corrplot(cor(stock_return), method = 'square') #pearson corrlastion
+```
+
+```{r}
+corrplot(cor(stock_return, method = "kendall", use = "complete.obs"), method = 'square') #Kendall tau
+```
+
+```{r}
+for (i in 1:ncol(stock_return)){
+  plot(stock_return[,i], type = 'l', ylab = colnames(stock_return)[i])
+}
+```
+```{r, fig.height=6}
+for (i in 1:ncol(stock_return)){
+  basic_eda(stock_return[,i], lag = 52)
+}
+```
+
+
+
+
+```{r warning=FALSE}
+# library(xts)
+# print(colnames(stock_return))
+# for (i in 1:ncol(stock_return)) {
+#   current_plot <- arma_garch_ic_plot(stock_return[,i], 
+#                                    arma_p_range = 0:4, 
+#                                    arma_q_range = 0:4,
+#                                    output = "plot")
+# 
+# }
+```
+
+```{r}
+arma_order <- data.frame(
+  stock = c("AAPL", "MSFT", "META", "V", "JPM", "C", "BTC.USD", "UEC", "GM", "ET"),
+  ar = c(4, 2, 2, 0, 2, 3, 3, 0, 2, 4),
+  ma = c(3, 3, 2, 0, 3, 3, 3, 0, 2, 4)
+)
+```
+
+
+### ARMA-GARCH modelling
+
+
+
+```{r}
+# arma_garch_fits<- list()
+# 
+for (i in 1: ncol(stock_df_train)){
+  print(colnames(stock_df_train)[i])
+  spec <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+  mean.model = list(armaOrder = c(arma_order$ar[i], arma_order$ma[i]), include.mean = TRUE),
+  distribution.model = "norm"
+)
+
+  asset<-stock_return[,i]
+  fit<-ugarchfit(spec,data = asset, solver = "hybrid")
+  arma_garch_fits[[colnames(stock_return)[i]]]<-fit
+ }
+```
+# Portfolio Optimization
+
+
+```{r}
+mean_vect<- sapply(stock_return, mean)
+sd_vect<- sapply(stock_return, sd)
+
+```
+```{r}
+#install.packages("quadprog")
+library(quadprog)
+
+# Compute mean and standard deviation vectors
+mean_vect <- sapply(stock_return, mean)
+sd_vect <- sapply(stock_return, sd)
+
+# Plot mean vs. standard deviation
+
+
+# Step 1: Compute mean returns and covariance matrix
+mean_returns <- colMeans(stock_return)
+cov_matrix <- cov(stock_return)
+
+# Step 2: Create a sequence of target returns
+target_returns <- seq(min(mean_returns), max(mean_returns), length.out = 100)
+
+# Step 3: Create empty vectors to store results
+eff_sd <- numeric(length(target_returns))
+eff_return <- numeric(length(target_returns))
+
+# Step 4: Loop to compute minimum variance for each target return
+for (i in seq_along(target_returns)) {
+  Dmat <- 2 * cov_matrix
+  dvec <- rep(0, ncol(stock_return))
+  Amat <- cbind(
+    rep(1, ncol(stock_return)),     # sum of weights = 1
+    mean_returns                    # expected return = target
+  )
+  bvec <- c(1, target_returns[i])
+  result <- solve.QP(Dmat, dvec, Amat, bvec, meq = 2)
+  w <- result$solution
+  eff_sd[i] <- sqrt(t(w) %*% cov_matrix %*% w)
+  eff_return[i] <- sum(w * mean_returns)
+}
+xlim_range <- range(c(sd_vect, eff_sd))
+ylim_range <- range(c(mean_vect, eff_return))
+
+plot(sd_vect, mean_vect, 
+     pch = 19, 
+     xlab = "Standard Deviation", 
+     ylab = "Mean Return", 
+     main = "Risk-Return Plot", 
+     xlim = xlim_range, 
+     ylim = ylim_range)
+
+text(sd_vect, mean_vect, labels = colnames(stock_return), pos = 4, cex = 0.8)
+lines(eff_sd, eff_return, col = "blue", lwd = 2)
+```
+## Markowitz mean variance problem
+
+We define the markowitz mean-variance problem as:
+$$
+\min_{w_t\in \mathcal{W_t}} w^T\Sigma_t w\\
+\text{s.t  } w^T\mu_t \geq \mu_{\min}\\
+\mathcal{W} :=\left\{w | w_i \geq 0, \sum^n_{i=1}w_i = 1  \right\}, \ i = 1,2,\dots, n
+$$
+
+
+
+
+
+```{r}
+suppressWarnings(library(CVXR, warn.conflicts=FALSE))
+```
+
+
+
+```{r}
+
+mu_sigma_forecast_extract <- function(df = stock_return, models_list = arma_garch_fits, n.ahead = 1) {
+  # Initialize empty data frames
+  forecast_mu <- data.frame(Date = as.Date(character()), Series = character(), Forecast_Mu = numeric())
+  forecast_sigma <- data.frame(Date = as.Date(character()), Series = character(), Forecast_Sigma = numeric())
+
+  for (i in seq_along(models_list)) {
+    model <- models_list[[i]]
+    series_name <- names(df)[i]
+
+    # Forecast n.ahead steps
+    forecast <- ugarchforecast(model, n.ahead = n.ahead)
+
+    # Extract full vectors
+    mu_forecast <- as.numeric(fitted(forecast))
+    sigma_forecast <- as.numeric(sigma(forecast))
+
+
+    # Store each forecasted step
+    forecast_mu <- rbind(forecast_mu, data.frame(
+      Series = rep(series_name, n.ahead),
+      Forecast_Mu = mu_forecast
+    ))
+
+    forecast_sigma <- rbind(forecast_sigma, data.frame(
+      Series = rep(series_name, n.ahead),
+      Forecast_Sigma = sigma_forecast
+    ))
+  }
+
+  return(list(Forecast_Mu = forecast_mu, Forecast_Sigma = forecast_sigma))
+}
+
+
+mu_sigma_list = mu_sigma_forecast_extract()
+mu_sigma_list
+
+```
+```{r}
+cond_mu = mu_sigma_list$Forecast_Mu$Forecast_Mu
+cond_sigma = mu_sigma_list$Forecast_Sigma$Forecast_Sigma
+
+```
+```{r}
+# Compute mean and standard deviation vectors
+mean_vect <- cond_mu
+sd_vect <- cond_sigma
+
+# Plot mean vs. standard deviation
+
+
+# Step 1: Compute mean returns and covariance matrix
+mean_returns <- colMeans(stock_return)
+cov_matrix <- cov(stock_return)
+
+# Step 2: Create a sequence of target returns
+target_returns <- seq(min(mean_returns), max(mean_returns), length.out = 100)
+
+# Step 3: Create empty vectors to store results
+eff_sd <- numeric(length(target_returns))
+eff_return <- numeric(length(target_returns))
+
+# Step 4: Loop to compute minimum variance for each target return
+for (i in seq_along(target_returns)) {
+  Dmat <- 2 * cov_matrix
+  dvec <- rep(0, ncol(stock_return))
+  Amat <- cbind(
+    rep(1, ncol(stock_return)),     # sum of weights = 1
+    mean_returns                    # expected return = target
+  )
+  bvec <- c(1, target_returns[i])
+  result <- solve.QP(Dmat, dvec, Amat, bvec, meq = 2)
+  w <- result$solution
+  eff_sd[i] <- sqrt(t(w) %*% cov_matrix %*% w)
+  eff_return[i] <- sum(w * mean_returns)
+}
+
+xlim_range <- range(c(sd_vect, eff_sd))
+ylim_range <- range(c(mean_vect, eff_return))
+
+plot(sd_vect, mean_vect, 
+     pch = 19, 
+     xlab = "Standard Deviation", 
+     ylab = "Mean Return", 
+     main = "Risk-Return Plot", 
+     xlim = xlim_range, 
+     ylim = ylim_range, col = "red")
+
+lines(eff_sd, eff_return, col = "blue", lwd = 2)
+
+```
+
+
+```{r}
+require(matrixcalc)
+require(CVXR)
+adjust_cov_matrix <- function(return_df, cond_sigma) {
+  # Compute initial covariance matrix
+  cov_matrix <- cov(return_df)
+  
+  # Replace diagonal with GARCH conditional variances
+  sigma_now <- cov_matrix
+  for (i in 1:nrow(sigma_now)) {
+    sigma_now[i, i] <- cond_sigma[i]^2
+  }
+  
+  # Check PSD status
+  eigenvalues <- eigen(sigma_now, symmetric = TRUE, only.values = TRUE)$values
+  check_psd <- all(eigenvalues >= -1e-10)
+  
+  # If not PSD, find nearest PSD matrix
+  if (!check_psd) {
+    message("Cov matrix is not PSD, approximating nearest PSD matrix...")
+    m <- nrow(sigma_now)
+    X <- CVXR::Variable(m, m, symmetric = TRUE)
+    objective <- CVXR::Minimize(CVXR::sum_squares(X - sigma_now))
+    constraints <- list(X %>>% 0)
+    problem <- CVXR::Problem(objective, constraints)
+    result <- CVXR::solve(problem)
+    
+    sigma_now <- result$getValue(X)
+    message("PSD adjustment complete. ", 
+            "Min eigenvalue: ", round(min(eigen(sigma_now)$values), 4))
+  
+    
+    }
+  eigenvalues <- eigen(sigma_now, symmetric = TRUE, only.values = TRUE)$values
+  check_psd <- all(eigenvalues >= -1e-10)
+  
+  if (!check_psd){
+    decomp = eigen(sigma_now)
+    V = decomp$values
+    U = decomp$vectors
+    
+    V = ifelse(V<0, 0, V)
+    sigma_now = U%*%diag(V)%*%Matrix::solve(U)
+  }
+  return(sigma_now)
+}
+mv_optimization <- function(sigma_now, cond_mu, 
+                           min_return = 0.05, 
+                           solver = "ECOS") {
+  # Input validation
+  if (length(cond_mu) != nrow(sigma_now)) {
+    stop("cond_mu length doesn't match covariance matrix dimension")
+  }
+  
+  n <- length(cond_mu)
+  w <- CVXR::Variable(n)
+  lambda = 10
+  # Portfolio optimization problem
+  objective <- Maximize(t(cond_mu) %*% w - lambda * quad_form(w, sigma_now))
+  
+  # Constraints
+  constraints <- list(
+    sum(w) == 1,  # Budget constraint
+    w >= -1,      # Allow short-selling (up to 100%)
+    w <= 1        # No leverage beyond 100%
+  )
+
+
+  
+  problem <- CVXR::Problem(objective, constraints)
+
+
+  # Solve and return results
+  result <- CVXR::solve(problem, solver = solver, verbose = F)
+  
+  if (result$status != "optimal") {
+    warning("Optimization failed with status: ", result$status)
+  }
+  
+  return(list(
+    weights = as.numeric(result$getValue(w)),
+    portfolio_variance = result$value,
+    status = result$status
+  ))
+}# First adjust covariance matrix
+adjusted_cov <- adjust_cov_matrix(
+  return_df = stock_return,
+  cond_sigma = mu_sigma_list$Forecast_Sigma$Forecast_Sigma
+)
+
+# Then run optimization
+optim_result <- mv_optimization(
+  sigma_now = adjusted_cov,
+  cond_mu = mu_sigma_list$Forecast_Mu$Forecast_Mu,
+  min_return = 0
+)
+
+# Print results
+print(paste("Optimal weights:", round(optim_result$weights, 5)))
+print(paste("Portfolio variance:", optim_result$portfolio_variance))
+```
+
+
+```{r}
+for (i in 1: length(optim_result$weights)){
+  print(paste0(colnames(stock_return)[i]," ", round(optim_result$weights[i], 5)))
+  }
+```
+
+```{r}
+(t(cond_mu)%*%optim_result$weights)*100
+```
+
+
+
+
+### compare with unconditional mean
+```{r}
+# Then run optimization
+optim_result_wo_cond <- mv_optimization(
+  sigma_now = cov(stock_return),
+  cond_mu = sapply(stock_return, mean),
+  min_return = 0
+)
+
+# Print results
+print(paste("Optimal weights:", round(optim_result_wo_cond$weights, 5)))
+print(paste("Portfolio variance:", optim_result_wo_cond$portfolio_variance))
+```
+
+```{r}
+(t(sapply(stock_return, mean))%*%optim_result_wo_cond$weights)*100
+
+```
+
+
+
+
+## Risk Averse Optimization Model
+
+We consider Risk-Averse problem defined as:
+
+$$
+\min_{x \in \mathcal{X}}\mathbb{E}[Z_x] + c\mathbb{D}[Z_x]
+$$
+
+Where:
+- $c \geq 0$ plays the role of the price of risk
+- $\mathbb{E}$ is the expected value
+- $\mathcal{X} \subseteq \mathbb{R}^n$ is assumed to be closed and convex
+- $\mathbb{D}: \mathcal{Z} \rightarrow \mathbb{R}$ is a dispersion measure
+
+
+
+
+### CVaR as a dispersion measure
+$$
+  \text{CVaR}_\alpha(w) = \min_{\zeta \in \mathbb{R}} \left[ \zeta + \frac{1}{(1 - \alpha)T} \sum_{i=1}^T \max\left\{ L_i(w) - \zeta, 0 \right\} \right]
+$$
+
+### Optimization Problem
+
+$$
+\begin{aligned}
+\min_{w, \zeta} \quad & \zeta + \frac{1}{(1 - \alpha)T} \sum_{i=1}^T u_i \\
+\text{s.t.} \quad & u_i \ge -r_i^\top w - \zeta,\quad u_i \ge 0 \\
+& \mathbf{1}^\top w = 1,\quad w \ge 0 \\
+\end{aligned}
+$$
+
+Where:
+
+* $\zeta \in \mathbb{R}$: VaR auxiliary variable
+* $u_i \in \mathbb{R}_{+}$: CVaR hinge loss per scenario
+
+```{r}
+library(CVXR)
+
+cvar_optimization <- function(return_mat, alpha = 0.95) {
+  P <- nrow(return_mat)
+  n <- ncol(return_mat)
+
+  w <- Variable(n)
+  zeta <- Variable(1)
+  u <- Variable(P)
+
+  loss_matrix <- -return_mat  # L_i(w) = -r_i^T w
+  losses <- loss_matrix %*% w
+
+  
+  # Objective: minimize CVaR
+  objective <- Minimize(zeta + (1 / ((1 - alpha) * P)) * sum(u))
+
+  # Constraints
+  constraints <- list(
+    u >= losses - zeta,
+    u >= 0,
+    sum(w) == 1,
+    w >= 0
+  )
+  problem <- Problem(objective, constraints)
+
+
+  result <- solve(problem, verbose = F, solver = "ECOS")
+
+  list(
+    weights = round(result$getValue(w), 4),
+    status = result$status,
+    cvar = result$value
+  )
+}
+simulate_t_returns <- function(cond_mu, cond_sigma, df = rep(1,10), n_sim = 500) {
+  m <- length(cond_mu)
+  sims <- matrix(NA, nrow = n_sim, ncol = m)
+  
+  for (i in 1:m) {
+    # Simulate standardized t-distributed errors, then scale and shift
+    z <- rt(n_sim, df = df[i])
+    sims[, i] <- cond_mu[i] + cond_sigma[i] * z
+  }
+  
+  
+  colnames(sims) <- paste0("Asset_", 1:m)
+  return(sims)
+}
+simult_t = simulate_t_returns(cond_mu = cond_mu, cond_sigma = cond_sigma)
+
+```
+
+```{r}
+
+cvar_optim<-cvar_optimization(return_mat = simult_t)
+```
+```{r}
+for (i in 1: length(optim_result$weights)){
+  print(paste0(colnames(stock_return)[i]," ", round(cvar_optim$weights[i], 5)))
+  }
+```
+
+```{r}
+(t(cond_mu)%*%cvar_optim$weights)*100
+
+```
+
+
+
+
+```{r}
+simult_t_wo_cond = simulate_t_returns(cond_mu = sapply(stock_return, mean), cond_sigma = sapply(stock_return, sd))
+
+cvar_optim_wo_cond<-cvar_optimization(return_mat = simult_t_wo_cond)
+```
+
+
+```{r}
+for (i in 1: length(optim_result$weights)){
+  print(paste0(colnames(stock_return)[i]," ", round(cvar_optim_wo_cond$weights[i], 5)))
+  }
+```
+
+### copmare with unconditional mean
+```{r}
+t(sapply(stock_return, mean))%*%cvar_optim$weights*100
+```
+
+### Comparison(variance as a dispersion measure)
+
+
+
+
+
+
+
+
+## Implement a rolling online learning algorithm for the optimization
+
+1. Train-test split data: 
+  - train data : <2024-01-01
+  - test data: >=2024-01-01
+2. modelling
+3. backtesting:
+  obtain historical mu and historical sigma (for comparison later)
+  for t to T:
+    mu_t+1, sigma_t+1<- forecast conditional mean and conditional variance of t+1
+    
+    weights_markowitz_cond<- use forecast for markowitz problem obtain weights
+    weights_cvar_cond <- use forecast for CVaR
+    
+    weights_markowitz_uncond<- use historical estimate for markowitz problem obtain weights
+    weights_cvar_uncond<- use historical estimate for CVaR problem obtain weights
+    
+    return_test_t+1<-
+    
+    Repeat until test exhausted
+    
+
+
+# Main Algorithm
+```{r}
+test_return<- calculate_returns(stock_df_test)
+```
+
+arma_garch_fits
+mu_sigma_forecast_extract
+mv_optimization
+cvar_optimization
+simulate_t_returns
+adjust_cov_matrix
+```{r}
+require(zoo)
+require(CVXR)
+
+optimize<-function(return_train = stock_return, return_test = test_return, windows = 10){
+  # Initialize 
+  n<-nrow(return_test)
+  df_return = return_train
+  
+  weights_mv_garch_markowitz<-vector("list", n)
+  weights_mv_hist_markowitz<-vector("list", n)
+  objective_markowitz_garch<-numeric(n)
+  objective_markowitz_hist<-numeric(n)
+  return_markowitz_garch<-numeric(n)
+  return_markowitz_hist<-numeric(n)
+  
+  
+  weights_mv_garch_cvar<-vector("list", n)
+  weights_mv_hist_cvar<-vector("list", n)
+  objective_cvar_garch<-numeric(n)
+  objective_cvar_hist<-numeric(n)
+  return_cvar_garch<-numeric(n)
+  return_cvar_hist<-numeric(n)
+  
+  hist_return<-df_return
+
+  for (i in 1:n){
+    # Calculate Historical Mu and Sigma
+    mu_hist<-sapply(hist_return, mean)
+    cov_hist<-cov(hist_return)
+    
+    ## Calculate sigmas for t-simul
+    sigma_hist<-sapply(hist_return, sd)
+    
+    ## Check sigma_hist PSD
+    eigenvalues <- eigen(cov_hist, symmetric = TRUE, only.values = TRUE)$values
+    check_psd <- all(eigenvalues >= -1e-16)
+    if(!check_psd){
+      print("sigma_hist is not PSD")
+    }
+    
+    #--------------------------------------------------------------------------------------------
+    #obtain mu forecast and sigma forecast
+    mu_sigma_list = mu_sigma_forecast_extract(df = hist_return, models_list = arma_garch_fits, n.ahead = windows)
+    cond_mu<-numeric(ncol(hist_return))
+    cond_sigma = numeric(ncol(hist_return))
+    arma_garch_fits<- list()
+
+    for (i in 1: ncol(stock_df_train)){
+      print(colnames(stock_df_train)[i])
+      spec <- ugarchspec(
+      variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+      mean.model = list(armaOrder = c(arma_order$ar[i], arma_order$ma[i]), include.mean = TRUE),
+      distribution.model = "norm"
+    )
+
+    asset<-stock_return[,i]
+    fit<-ugarchfit(spec,data = asset, solver = "hybrid")
+    arma_garch_fits[[colnames(stock_return)[i]]]<-fit
+   }
+    # TODO: put markowitz and cvar inside the for loop wiondows and refit the model
+    for (j in 1:windows){
+      index = seq(j, nrow(mu_sigma_list$Forecast_Mu), windows)
+      cond_mu<- mu_sigma_list$Forecast_Mu$Forecast_Mu[index]
+      cond_sigma<-  mu_sigma_list$Forecast_Sigma$Forecast_Sigma
+      
+      ## Adjust cov matrix with forecast
+
+      cond_cov = adjust_cov_matrix(df_return, cond_sigma = cond_sigma)
+
+    }
+    
+    
+    
+
+    
+    #--------------------------------------------------------------------------------------------
+    
+    #--------------------------------------------------------------------------------------------
+    #obtain weights for markowiitz
+    ## Via GARCH
+    w_mv_markowitz<-mv_optimization(sigma_now = cond_cov, cond_mu = cond_mu, min_return = 0.0)
+    if(w_mv_markowitz$status!="optimal"){
+    print(w_mv_markowitz$status)}
+    weights_mv_garch_markowitz[[i]]<-w_mv_markowitz$weights
+    objective_markowitz_garch[i]<-w_mv_markowitz$portfolio_variance
+    
+    ## via historical
+    w_mv_wo_markowitz<-mv_optimization(sigma_now = cov_hist, cond_mu = mu_hist, min_return = 0.0)
+    if(w_mv_wo_markowitz$status!="optimal"){
+    print(w_mv_wo_markowitz$status)}
+
+    weights_mv_hist_markowitz[[i]]<-w_mv_wo_markowitz$weights
+    objective_markowitz_hist[i]<-w_mv_wo_markowitz$portfolio_variance
+    
+    #obtain weights for cvar
+    ## Via GARCH
+    t_simul<-simulate_t_returns(cond_mu = cond_mu, cond_sigma = cond_sigma, df = rep(1,10), n_sim = nrow(hist_return))
+    w_mv_garch_cvar<-cvar_optimization(return_mat = t_simul)
+    if(w_mv_garch_cvar$status!="optimal"){
+    print(w_mv_garch_cvar$status)}
+    weights_mv_garch_cvar[[i]]<-w_mv_garch_cvar$weights
+    objective_cvar_garch[i]<-w_mv_garch_cvar$cvar
+      
+    ## via historical
+    t_simul<-simulate_t_returns(cond_mu = mu_hist, cond_sigma = sigma_hist, df = rep(1,10), n_sim = nrow(hist_return))
+    w_mv_hist_cvar<-cvar_optimization(return_mat = t_simul)
+    if(w_mv_hist_cvar$status!="optimal"){
+    print(w_mv_hist_cvar$status)}
+    weights_mv_garch_cvar[[i]]<-w_mv_hist_cvar$weights
+    objective_cvar_garch[i]<-w_mv_hist_cvar$cvar
+    
+    
+    # Calculate portfolio returns
+    next_return<-return_test[i,]
+    ret_matrix=as.matrix(next_return)
+    ## Markowitz
+    return_markowitz_garch[i]<-ret_matrix%*%w_mv_markowitz$weights
+    return_markowitz_hist[i]<-ret_matrix%*%w_mv_wo_markowitz$weights
+    
+    ## CVaR
+    return_cvar_garch[i]<-ret_matrix%*%w_mv_garch_cvar$weights
+    return_cvar_hist[i]<-ret_matrix%*%w_mv_hist_cvar$weights
+    
+    ## Append next return
+    hist_return<-rbind(hist_return, next_return)
+  
+  #--------------------------------------------------------------------------------------------
+  }
+
+
+    # Return weights as separate data frames
+  weights_list <- list(
+    Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Weights = c(weights_mv_garch_markowitz, weights_mv_hist_markowitz),
+      stringsAsFactors = FALSE
+    ),
+    CVaR = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Weights = c(weights_mv_garch_cvar, weights_mv_hist_cvar),
+      stringsAsFactors = FALSE
+    )
+  )
+
+  # Return realized returns as separate data frames
+  returns_list <- list(
+    Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Return = c(return_markowitz_garch, return_markowitz_hist),
+      stringsAsFactors = FALSE
+    ),
+    CVaR = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Return = c(return_cvar_garch, return_cvar_hist),
+      stringsAsFactors = FALSE
+    )
+  )
+
+  # Return objectives as separate data frames
+  objectives_list <- list(
+    Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Objective = c(objective_markowitz_garch, objective_markowitz_hist),
+      stringsAsFactors = FALSE
+    ),
+    CVaR = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Objective = c(objective_cvar_garch, objective_cvar_hist),
+      stringsAsFactors = FALSE
+    )
+  )
+  
+  # Combine everything in a named list
+  results_list <- list(
+    Weights = weights_list,
+    Returns = returns_list,
+    Objectives = objectives_list
+  )
+  
+  return(results_list)
+
+}
+
+```
+
+
+```{r}
+require(zoo)
+require(CVXR)
+library(tidyr)
+library(dplyr)
+
+optimize <- function(return_train = stock_return, return_test = test_return, windows = 10){
+  n <- nrow(return_test)
+  df_return <- return_train
+
+  # Initialize output storage
+  weights_mv_garch_markowitz <- vector("list", n)
+  weights_mv_hist_markowitz  <- vector("list", n)
+  objective_markowitz_garch  <- numeric(n)
+  objective_markowitz_hist   <- numeric(n)
+  return_markowitz_garch     <- numeric(n)
+  return_markowitz_hist      <- numeric(n)
+
+  weights_mv_garch_cvar <- vector("list", n)
+  weights_mv_hist_cvar  <- vector("list", n)
+  objective_cvar_garch  <- numeric(n)
+  objective_cvar_hist   <- numeric(n)
+  return_cvar_garch     <- numeric(n)
+  return_cvar_hist      <- numeric(n)
+
+  hist_return <- df_return
+
+  arma_garch_fits <- list()
+  mu_sigma_list <- NULL
+  cond_mu <- NULL
+  cond_sigma <- NULL
+
+  for (i in 1:n) {
+    # Refit ARMA-GARCH models every `windows` steps
+    if ((i - 1) %% windows == 0) {
+      arma_garch_fits <- list()
+      for (j in 1:ncol(hist_return)) {
+        asset_name <- colnames(hist_return)[j]
+        asset <- hist_return[, j]
+
+        spec <- ugarchspec(
+          variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+          mean.model = list(armaOrder = c(arma_order$ar[j], arma_order$ma[j]), include.mean = TRUE),
+          distribution.model = "norm"
+        )
+
+        fit <- ugarchfit(spec, data = asset, solver = "hybrid")
+        arma_garch_fits[[asset_name]] <- fit
+      }
+
+      # Generate forecasts for next `windows` days
+      mu_sigma_list <- mu_sigma_forecast_extract(df = hist_return, models_list = arma_garch_fits, n.ahead = windows)
+    }
+    
+    
+    # Historical estimates
+    mu_hist <- sapply(hist_return, mean)
+    cov_hist <- cov(hist_return)
+    sigma_hist <- sapply(hist_return, sd)
+
+    # Forecasted values for current day
+    #!!!!!!
+
+
+    # Convert Forecast_Mu and Forecast_Sigma to wide format (rows = forecast step, cols = assets)
+    mu_wide <- mu_sigma_list$Forecast_Mu %>%
+      group_by(Series) %>%
+      mutate(step = row_number()) %>%
+      ungroup() %>%
+      select(step, Series, Forecast_Mu) %>%
+      pivot_wider(names_from = Series, values_from = Forecast_Mu) %>%
+      arrange(step)
+    
+    sigma_wide <- mu_sigma_list$Forecast_Sigma %>%
+      group_by(Series) %>%
+      mutate(step = row_number()) %>%
+      ungroup() %>%
+      select(step, Series, Forecast_Sigma) %>%
+      pivot_wider(names_from = Series, values_from = Forecast_Sigma) %>%
+      arrange(step)
+    
+    # Select the correct step (cycled over window size)
+    forecast_step <- (i - 1) %% windows + 1
+    
+    # Extract as named numeric vectors
+    cond_mu <- as.numeric(mu_wide[forecast_step, -1])
+    names(cond_mu) <- colnames(mu_wide)[-1]
+    
+
+    cond_sigma <- as.numeric(sigma_wide[forecast_step, -1])
+    names(cond_sigma) <- colnames(sigma_wide)[-1]
+
+    cond_cov <- adjust_cov_matrix(df_return, cond_sigma = cond_sigma)
+
+    ## Markowitz Optimization
+    # GARCH-based
+    w_mv_markowitz <- mv_optimization(sigma_now = cond_cov, cond_mu = cond_mu, min_return = 0.02^2)
+    if (w_mv_markowitz$status != "optimal") print(w_mv_markowitz$status)
+    weights_mv_garch_markowitz[[i]] <- w_mv_markowitz$weights
+    objective_markowitz_garch[i] <- w_mv_markowitz$portfolio_variance
+
+    # Historical
+    w_mv_hist_markowitz <- mv_optimization(sigma_now = cov_hist, cond_mu = mu_hist, min_return = 0.02^2)
+    if (w_mv_hist_markowitz$status != "optimal") print(w_mv_hist_markowitz$status)
+    weights_mv_hist_markowitz[[i]] <- w_mv_hist_markowitz$weights
+    objective_markowitz_hist[i] <- w_mv_hist_markowitz$portfolio_variance
+
+    ## CVaR Optimization
+    # GARCH-based
+    t_simul_garch <- simulate_t_returns(cond_mu = cond_mu, cond_sigma = cond_sigma, df = rep(1, length(cond_mu)), n_sim = nrow(hist_return))
+    w_cvar_garch <- cvar_optimization(return_mat = t_simul_garch)
+    if (w_cvar_garch$status != "optimal") print(w_cvar_garch$status)
+    weights_mv_garch_cvar[[i]] <- w_cvar_garch$weights
+    objective_cvar_garch[i] <- w_cvar_garch$cvar
+
+    # Historical
+    t_simul_hist <- simulate_t_returns(cond_mu = mu_hist, cond_sigma = sigma_hist, df = rep(1, length(mu_hist)), n_sim = nrow(hist_return))
+    w_cvar_hist <- cvar_optimization(return_mat = t_simul_hist)
+    if (w_cvar_hist$status != "optimal") print(w_cvar_hist$status)
+    weights_mv_hist_cvar[[i]] <- w_cvar_hist$weights
+    objective_cvar_hist[i] <- w_cvar_hist$cvar
+
+    # Compute portfolio returns
+    next_return <- return_test[i, ]
+    ret_matrix <- as.matrix(next_return)
+    return_markowitz_garch[i] <- ret_matrix %*% w_mv_markowitz$weights
+    return_markowitz_hist[i] <- ret_matrix %*% w_mv_hist_markowitz$weights
+    return_cvar_garch[i] <- ret_matrix %*% w_cvar_garch$weights
+    return_cvar_hist[i] <- ret_matrix %*% w_cvar_hist$weights
+
+    # Update historical returns
+    hist_return <- rbind(hist_return, next_return)
+  }
+
+ results_list <- list(
+  # ---- Markowitz Returns ----
+  return_markowitz_garch = return_markowitz_garch,
+  return_markowitz_hist  = return_markowitz_hist,
+  
+  # ---- Markowitz Objectives ----
+  objective_markowitz_garch = objective_markowitz_garch,
+  objective_markowitz_hist  = objective_markowitz_hist,
+  
+  # ---- CVaR Returns ----
+  return_cvar_garch = return_cvar_garch,
+  return_cvar_hist  = return_cvar_hist,
+  
+  # ---- CVaR Objectives ----
+  objective_cvar_garch = objective_cvar_garch,
+  objective_cvar_hist  = objective_cvar_hist,
+  
+  # ---- Markowitz Weights ----
+  weights_mv_garch_markowitz = weights_mv_garch_markowitz,
+  weights_mv_hist_markowitz  = weights_mv_hist_markowitz,
+  
+  # ---- CVaR Weights ----
+  weights_mv_garch_cvar = weights_mv_garch_cvar,
+  weights_mv_hist_cvar  = weights_mv_hist_cvar
+)
+
+  
+  return(results_list)
+}
+
+
+backtest<-optimize()
+
+```
+
+Missing Components for Completion
+
+Rolling Window Implementation: For realistic online learning
+Performance Metrics: Sharpe ratio, maximum drawdown, etc.
+Risk Model Validation: Backtesting VaR/CVaR accuracy
+Transaction Costs: Real-world portfolio implementation considerations
+Regime Detection: Financial markets have changing regimes that affect model performance
+
+```{r}
+plot((backtest$objective_cvar_garch), x=c(1:length(backtest$return_markowitz_garch)), type = "l")
+plot((backtest$objective_cvar_hist), x=c(1:length(backtest$return_markowitz_hist)), type = "l", col = 'red')
+
+
+```
+```{r}
+mean(backtest$return_markowitz_garch)/sd(backtest$return_markowitz_garch)
+mean(backtest$return_markowitz_hist)/sd(backtest$return_markowitz_hist)
+
+```
+
+
+```{r}
+
+
+```
+```{r}
+require(zoo)
+require(CVXR)
+
+optimize_rmgarch<-function(return_train = stock_return, return_test = test_return, windows = 10){
+  # Initialize 
+  n<-nrow(return_test)
+  df_return = return_train
+  
+  weights_mv_garch_markowitz<-vector("list", n)
+  weights_mv_hist_markowitz<-vector("list", n)
+  objective_markowitz_garch<-numeric(n)
+  objective_markowitz_hist<-numeric(n)
+  return_markowitz_garch<-numeric(n)
+  return_markowitz_hist<-numeric(n)
+  
+  
+
+  
+  hist_return<-df_return
+
+  for (i in 1:n){
+    # Calculate Historical Mu and Sigma
+    mu_hist<-sapply(hist_return, mean)
+    cov_hist<-cov(hist_return)
+    
+    ## Calculate sigmas for t-simul
+    sigma_hist<-sapply(hist_return, sd)
+    
+    ## Check sigma_hist PSD
+    eigenvalues <- eigen(cov_hist, symmetric = TRUE, only.values = TRUE)$values
+    check_psd <- all(eigenvalues >= -1e-16)
+    if(!check_psd){
+      print("sigma_hist is not PSD")
+    }
+    
+    #--------------------------------------------------------------------------------------------
+    #obtain mu forecast and sigma forecast
+    mu_sigma_list = mu_sigma_forecast_extract(df = hist_return, models_list = arma_garch_fits, n.ahead = windows)
+    cond_mu<-numeric(ncol(hist_return))
+    cond_sigma = numeric(ncol(hist_return))
+    arma_garch_fits<- list()
+
+      for (i in 1: ncol(stock_df_train)){
+        print(colnames(stock_df_train)[i])
+        spec <- ugarchspec(
+        variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+        mean.model = list(armaOrder = c(arma_order$ar[i], arma_order$ma[i]), include.mean = TRUE),
+        distribution.model = "norm"
+      )
+  
+      asset<-stock_return[,i]
+      fit<-ugarchfit(spec,data = asset, solver = "hybrid")
+      arma_garch_fits[[colnames(stock_return)[i]]]<-fit
+     }
+
+      for (j in 1:windows){
+        index = seq(j, nrow(mu_sigma_list$Forecast_Mu), windows)
+        cond_mu<- mu_sigma_list$Forecast_Mu$Forecast_Mu[index]
+        cond_sigma<-  mu_sigma_list$Forecast_Sigma$Forecast_Sigma
+        
+        ## Adjust cov matrix with forecast
+  
+        cond_cov = adjust_cov_matrix(df_return, cond_sigma = cond_sigma)
+  
+      }
+    
+    
+    
+
+    
+    #--------------------------------------------------------------------------------------------
+    
+    #--------------------------------------------------------------------------------------------
+    #obtain weights for markowiitz
+    ## Via GARCH
+    w_mv_markowitz<-mv_optimization(sigma_now = cond_cov, cond_mu = cond_mu, min_return = 0.0)
+    if(w_mv_markowitz$status!="optimal"){
+    print(w_mv_markowitz$status)}
+    weights_mv_garch_markowitz[[i]]<-w_mv_markowitz$weights
+    objective_markowitz_garch[i]<-w_mv_markowitz$portfolio_variance
+    
+    ## via historical
+    w_mv_wo_markowitz<-mv_optimization(sigma_now = cov_hist, cond_mu = mu_hist, min_return = 0.0)
+    if(w_mv_wo_markowitz$status!="optimal"){
+    print(w_mv_wo_markowitz$status)}
+
+    weights_mv_hist_markowitz[[i]]<-w_mv_wo_markowitz$weights
+    objective_markowitz_hist[i]<-w_mv_wo_markowitz$portfolio_variance
+    
+    
+    
+    
+    # Calculate portfolio returns
+    next_return<-return_test[i,]
+    ret_matrix=as.matrix(next_return)
+    ## Markowitz
+    return_markowitz_garch[i]<-ret_matrix%*%w_mv_markowitz$weights
+    return_markowitz_hist[i]<-ret_matrix%*%w_mv_wo_markowitz$weights
+    
+
+    ## Append next return
+    hist_return<-rbind(hist_return, next_return)
+  
+  #--------------------------------------------------------------------------------------------
+  }
+
+
+    # Return weights as separate data frames
+  weights_list <- Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Weights = c(weights_mv_garch_markowitz, weights_mv_hist_markowitz),
+      stringsAsFactors = FALSE
+    )
+  
+
+  # Return realized returns as separate data frames
+  returns_list <- Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Return = c(return_markowitz_garch, return_markowitz_hist),
+      stringsAsFactors = FALSE
+    )
+  
+
+  # Return objectives as separate data frames
+  objectives_list <- 
+    Markowitz = data.frame(
+      Method = rep(c("GARCH", "HIST"), each = n),
+      Objective = c(objective_markowitz_garch, objective_markowitz_hist),
+      stringsAsFactors = FALSE
+    )
+  
+  # Combine everything in a named list
+  results_list <- list(
+    Weights = weights_list,
+    Returns = returns_list,
+    Objectives = objectives_list
+  )
+  
+  return(results_list)
+
+}
+
+```
+
+```{r}
+mv_optimization <- function(sigma_now, cond_mu, 
+                           min_return = 0.05, 
+                           solver = "ECOS") {
+  # Input validation
+  if (length(cond_mu) != nrow(sigma_now)) {
+    stop("cond_mu length doesn't match covariance matrix dimension")
+  }
+  
+  n <- length(cond_mu)
+  w <- CVXR::Variable(n)
+  lambda = 10
+  # Portfolio optimization problem
+  objective <- Maximize(t(cond_mu) %*% w - lambda * quad_form(w, sigma_now))
+  
+  # Constraints
+  constraints <- list(
+    sum(abs(w)) <= 2,  # Budget constraint
+    abs(w) <= 0.2    # Allow short-selling (up to 100%)
+  )
+
+
+  
+  problem <- CVXR::Problem(objective, constraints)
+
+
+  # Solve and return results
+  result <- CVXR::solve(problem, solver = solver, verbose = F)
+  
+  if (result$status != "optimal") {
+    warning("Optimization failed with status: ", result$status)
+  }
+  
+  return(list(
+    weights = as.numeric(result$getValue(w)),
+    portfolio_variance = result$value,
+    status = result$status
+  ))
+}
+optimize_rmgarch <- function(return_train = stock_return, return_test = test_return, windows = 10){
+  require(rmgarch)
+
+  n <- nrow(return_test)
+  df_return <- return_train
+
+  weights_mv_garch_markowitz <- vector("list", n)
+  weights_mv_hist_markowitz <- vector("list", n)
+  objective_markowitz_garch <- numeric(n)
+  objective_markowitz_hist <- numeric(n)
+  return_markowitz_garch <- numeric(n)
+  return_markowitz_hist <- numeric(n)
+
+  hist_return <- df_return
+
+  for (i in 1:n) {
+    # Historical mean and covariance
+    mu_hist <- colMeans(hist_return)
+    cov_hist <- cov(hist_return)
+
+    # Check PSD
+    eigenvalues <- eigen(cov_hist, symmetric = TRUE, only.values = TRUE)$values
+    if (any(eigenvalues < -1e-16)) {
+      warning("Historical covariance matrix is not PSD")
+    }
+
+    #--------------------------------------------------------------------------------------------
+    # Fit DCC-GARCH on historical data
+    ret_matrix <- as.matrix(hist_return)
+
+    univ_specs <- list()
+    for (j in 1:ncol(ret_matrix)) {
+      univ_specs[[j]] <- ugarchspec(
+        variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+        mean.model = list(armaOrder = c(0, 0), include.mean = TRUE),
+        distribution.model = "norm"
+      )
+    }
+    names(univ_specs) <- colnames(ret_matrix)
+    multi_spec <- multispec(univ_specs)
+
+    dcc_spec <- dccspec(
+      uspec = multi_spec,
+      dccOrder = c(1, 1),
+      distribution = "mvnorm"
+    )
+
+    dcc_fit <- dccfit(dcc_spec, data = ret_matrix, solver = c("hybrid","solnp"))
+    dcc_fore <- dccforecast(dcc_fit, n.ahead = 1)
+    H_next <- dcc_fore@mforecast$H[[1]][,,1]  # Extract the forecasted covariance matrix
+
+    cond_mu <- colMeans(tail(hist_return, windows))  # Approximate forecasted mu using recent returns
+    cond_cov <- H_next
+
+    #--------------------------------------------------------------------------------------------
+    # Portfolio optimization (Markowitz)
+    # GARCH-based
+    w_mv_markowitz <- mv_optimization(sigma_now = cond_cov, cond_mu = cond_mu, min_return = 0.0)
+    if (w_mv_markowitz$status != "optimal") {
+      print(w_mv_markowitz$status)
+    }
+    weights_mv_garch_markowitz[[i]] <- w_mv_markowitz$weights
+    objective_markowitz_garch[i] <- w_mv_markowitz$portfolio_variance
+
+    # Historical-based
+    w_mv_wo_markowitz <- mv_optimization(sigma_now = cov_hist, cond_mu = mu_hist, min_return = 0.0)
+    if (w_mv_wo_markowitz$status != "optimal") {
+      print(w_mv_wo_markowitz$status)
+    }
+    weights_mv_hist_markowitz[[i]] <- w_mv_wo_markowitz$weights
+    objective_markowitz_hist[i] <- w_mv_wo_markowitz$portfolio_variance
+
+    #--------------------------------------------------------------------------------------------
+    # Portfolio return calculation
+    next_return <- return_test[i, ]
+    ret_matrix <- as.matrix(next_return)
+
+    return_markowitz_garch[i] <- ret_matrix %*% w_mv_markowitz$weights
+    return_markowitz_hist[i] <- ret_matrix %*% w_mv_wo_markowitz$weights
+
+    # Update historical return matrix
+    hist_return <- rbind(hist_return, next_return)
+  }
+  
+    # Return outputs
+    weights_df <- function(weight_list, method_name) {
+    do.call(rbind, lapply(1:length(weight_list), function(i) {
+      data.frame(
+        Time = i,
+        Method = method_name,
+        t(weight_list[[i]])
+      )
+    }))
+  }
+  
+  weights_garch_df <- weights_df(weights_mv_garch_markowitz, "GARCH")
+  weights_hist_df  <- weights_df(weights_mv_hist_markowitz, "HIST")
+  weights_list <- rbind(weights_garch_df, weights_hist_df)
+
+  returns_list <- data.frame(
+  Time = rep(1:n, 2),
+  Method = rep(c("GARCH", "HIST"), each = n),
+  Return = c(return_markowitz_garch, return_markowitz_hist)
+)
+
+objectives_list <- data.frame(
+  Time = rep(1:n, 2),
+  Method = rep(c("GARCH", "HIST"), each = n),
+  Objective = c(objective_markowitz_garch, objective_markowitz_hist)
+)
+
+results_list <- list(
+  Weights = weights_list,
+  Returns = returns_list,
+  Objectives = objectives_list
+)
+
+
+  return(results_list)
+}
+
+backtest_rmgarch<-optimize_rmgarch(return_test = test_return[1:80,], windows = 10)
+```
+```{r}
+backtest_rmgarch
+```
+
+```{r}
+plot(backtest_rmgarch$Objectives$Objective[which(backtest_rmgarch$Objectives$Method == "GARCH")], type = "l", ylim = c(0,0.011))
+lines(backtest_rmgarch$Objectives$Objective[which(backtest_rmgarch$Objectives$Method == "HIST")], col = "red")
+```
+
+```{r}
+plot(cumsum(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "GARCH")]), type = "l", ylim = c(-0.01, 0.15), xlim = c(0,80))
+lines(cumsum(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "HIST")]), col = "red")
+```
+```{r}
+mean(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "GARCH")])/sd(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "GARCH")])
+mean(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "HIST")])/sd(backtest_rmgarch$Returns$Return[which(backtest_rmgarch$Returns$Method == "HIST")])
+```
+
 
 
