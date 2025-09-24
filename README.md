@@ -1,6 +1,6 @@
 # Introduction
 The problem of portfolio optimization have been revolutionized by Markowitz’s mean-variance
-model in 1952 1 titled simply Portfolio Selection[1]. However the portfolio optimization proposed
+model in 1952  titled simply Portfolio Selection. However the portfolio optimization proposed
 assume perfect knowledge of expected returns and portfolio covariance matrix, which is impossible
 to have considering the unpredictable nature of the financial market. Many work have been
 proposed to address this issue. For example, robust(or ditributionally robust) stochastic framework
@@ -13,7 +13,7 @@ practitioners often uses historical data to estimate expected returns and price 
 future parameters. But considering the uncertainty essence of the market, this method rarely works
 satisfactorily.
 In this work, we will attempt to use volatility and expected returns forecast via GARCH
-model to solve the a risk averse2 optimization problems; i.) risk averse formulation of Markowitz’s
+model to solve the a risk averse optimization problems; i.) risk averse formulation of Markowitz’s
 mean variance portfolio model. Then we will backtest the result using portfolio of ten assets with
 varying degree of characteristics. We then compare the performance difference of two methods
 using historical data methods as a baseline comparison.
