@@ -29,3 +29,6 @@ while value and income are achieved through stable financials (JPM, C, GM) and h
 (ET). Additionally, the allocation provides macroeconomic hedging, with rate-sensitive financials,
 inflation-resistant commodities, and defensive equities (AAPL, V) mitigating risks across different
 economic conditions.
+
+
+For a full report refer to the pdf file Risk-Measure-Forecasting-and-Dynamic-Portfolio-Optimization.pdf
